@@ -367,7 +367,9 @@ int main(int argc, char *argv[]) {
 #endif
 
   // splash screen
-  QPixmap splashPixmap(":Resources/splash.png");
+  QPixmap splashPixmap = QIcon(":Resources/splash.svg").pixmap(QSize(610, 344));
+  splashPixmap.setDevicePixelRatio(QApplication::desktop()->devicePixelRatio());
+// QPixmap splashPixmap(":Resources/splash.png");
 #ifdef _WIN32
   QFont font("Arial", -1);
 #else
@@ -526,7 +528,7 @@ int main(int argc, char *argv[]) {
 
   loadShaderInterfaces(ToonzFolder::getLibraryFolder() + TFilePath("shaders"));
 
-  splash.showMessage(offsetStr + "Initializing Toonz application ...",
+  splash.showMessage(offsetStr + "Initializing OpenToonz ...",
                      Qt::AlignCenter, Qt::white);
   a.processEvents();
 
@@ -584,14 +586,18 @@ int main(int argc, char *argv[]) {
   a.processEvents();
 
   // Carico lo styleSheet
-  QString currentStyle = Preferences::instance()->getCurrentStyleSheet();
+  QString currentStyle = Preferences::instance()->getCurrentStyleSheetPath();
   a.setStyleSheet(currentStyle);
 
   TApp::instance()->setMainWindow(&w);
   w.setWindowTitle(applicationFullName);
-
-  splash.showMessage(offsetStr + "Starting main window ...", Qt::AlignCenter,
-                     Qt::white);
+  if (TEnv::getIsPortable()) {
+    splash.showMessage(offsetStr + "Starting OpenToonz Portable ...",
+                       Qt::AlignCenter, Qt::white);
+  } else {
+    splash.showMessage(offsetStr + "Starting main window ...", Qt::AlignCenter,
+                       Qt::white);
+  }
   a.processEvents();
 
   TFilePath fp = ToonzFolder::getModuleFile("mainwindow.ini");
