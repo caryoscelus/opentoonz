@@ -380,6 +380,34 @@
         <source>DarkMagenta</source>
         <translation>MagentaOscuro</translation>
     </message>
+    <message>
+        <source>Brightness</source>
+        <translation>Brillo</translation>
+    </message>
+    <message>
+        <source>Contrast</source>
+        <translation>Contraste</translation>
+    </message>
+    <message>
+        <source>HRange</source>
+        <translation>Rango tonal</translation>
+    </message>
+    <message>
+        <source>Line Width</source>
+        <translation>Grosor de línea</translation>
+    </message>
+    <message>
+        <source>ColorThres</source>
+        <translation>Umbral de color</translation>
+    </message>
+    <message>
+        <source>WhiteThres</source>
+        <translation>Umbral de blanco</translation>
+    </message>
+    <message>
+        <source>Toggle Autopaint Option  Palette : %1  Style#%2</source>
+        <translation>Pintado automático  Paleta : %1  Estilo#%2</translation>
+    </message>
 </context>
 <context>
     <name>TScriptBinding::CenterlineVectorizer</name>

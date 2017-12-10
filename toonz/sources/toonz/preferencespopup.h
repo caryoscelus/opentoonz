@@ -57,7 +57,6 @@ private:
       *m_vectorSnappingTargetCB, *m_dropdownShortcutsCycleOptionsCB,
       *m_interfaceFont, *m_interfaceFontWeight, *m_guidedDrawingStyle;
 
-
   DVGui::MeasuredDoubleLineEdit *m_defLevelWidth, *m_defLevelHeight;
 
   DVGui::DoubleLineEdit *m_defLevelDpi;
@@ -76,7 +75,9 @@ private:
       *m_projectRootDesktop, *m_projectRootCustom, *m_projectRootStuff,
       *m_onionSkinDuringPlayback, *m_autoSaveSceneCB, *m_autoSaveOtherFilesCB,
       *m_useNumpadForSwitchingStyles, *m_expandFunctionHeader,
-      *m_newLevelToCameraSizeCB, *m_ignoreImageDpiCB;
+      *m_useHigherDpiOnVectorSimplifyCB, *m_keepFillOnVectorSimplifyCB,
+      *m_newLevelToCameraSizeCB, *m_ignoreImageDpiCB,
+      *m_syncLevelRenumberWithXsheet, *m_downArrowInLevelStripCreatesNewFrame;
 
   DVGui::FileField *m_customProjectRootFileField;
 
@@ -94,6 +95,8 @@ private slots:
   void onProjectRootChanged();
   void onCustomProjectRootChanged();
   void onPixelUnitExternallySelected(bool on);
+  void onAutoSaveExternallyChanged();
+  void onAutoSavePeriodExternallyChanged();
   void onUnitChanged(int index);
   void onCameraUnitChanged(int index);
   void onRoomChoiceChanged(int index);
@@ -141,12 +144,15 @@ private slots:
   void onGetFillOnlySavebox(int index);
   void onFitToFlipbook(int);
   void onDropdownShortcutsCycleOptionsChanged(int);
+  void onDownArrowInLevelStripCreatesNewFrame(int);
   void onAddLevelFormat();
   void onRemoveLevelFormat();
   void onEditLevelFormat();
   void onLevelFormatEdited();
   void onIgnoreImageDpiChanged(int index);
   void onShow0ThickLinesChanged(int);
+  void onKeepFillOnVectorSimplifyChanged(int);
+  void onUseHigherDpiOnVectorSimplifyChanged(int);
   void onRegionAntialiasChanged(int);
   void onImportPolicyChanged(int);
   void onImportPolicyExternallyChanged(int policy);
@@ -182,6 +188,7 @@ private slots:
   void onFastRenderPathChanged();
   void onUseNumpadForSwitchingStylesClicked(bool);
   void onShowXSheetToolbarClicked(bool);
+  void onSyncLevelRenumberWithXsheetChanged(int);
   void onExpandFunctionHeaderClicked(bool);
   void onShowColumnNumbersChanged(int);
   void onUseArrowKeyToShiftCellSelectionClicked(int);
@@ -191,6 +198,8 @@ private slots:
   void onInterfaceFontChanged(int index);
   void onInterfaceFontWeightChanged(int index);
   void onXsheetLayoutChanged(const QString &text);
+  void onPathAliasPriorityChanged(int index);
+  void onShowCurrentTimelineChanged(int);
 };
 
 //**********************************************************************************

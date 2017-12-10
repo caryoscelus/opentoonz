@@ -78,6 +78,12 @@ public:
 
   enum SnappingTarge { SnapStrokes, SnapGuides, SnapAll };
 
+  enum PathAliasPriority {
+    ProjectFolderAliases = 0,
+    SceneFolderAlias,
+    ProjectFolderOnly
+  };
+
 public:
   static Preferences *instance();
 
@@ -132,6 +138,9 @@ public:
   void enableWatchFileSystem(bool on);
   bool isWatchFileSystemEnabled() { return m_watchFileSystem; }
 
+  void setPathAliasPriority(PathAliasPriority priority);
+  PathAliasPriority getPathAliasPriority() const { return m_pathAliasPriority; }
+
   // Interface  tab
 
   void setCurrentLanguage(const QString &currentLanguage);
@@ -158,9 +167,6 @@ public:
 
   void setCameraUnits(std::string s);
   QString getCameraUnits() const { return m_cameraUnits; }
-
-  // void setRoomChoice(std::string s);
-  // QString getRoomChoice() const { return m_roomChoice; }
 
   void setCurrentRoomChoice(int currentRoomChoice);
   void setCurrentRoomChoice(QString currentRoomChoice);
@@ -342,8 +348,20 @@ public:
   void setVectorSnappingTarget(int target);
   int getVectorSnappingTarget() { return m_vectorSnappingTarget; }
 
-  // Tools Tab
+  void setKeepFillOnVectorSimplify(bool on);
+  bool getKeepFillOnVectorSimplify() { return m_keepFillOnVectorSimplify; }
 
+  void setUseHigherDpiOnVectorSimplify(bool on);
+  bool getUseHigherDpiOnVectorSimplify() {
+    return m_useHigherDpiOnVectorSimplify;
+  }
+
+  void setDownArrowLevelStripNewFrame(bool on);
+  bool getDownArrowLevelStripNewFrame() {
+    return m_downArrowInLevelStripCreatesNewFrame;
+  }
+
+  // Tools Tab
   void setDropdownShortcutsCycleOptions(bool on);
   bool getDropdownShortcutsCycleOptions() {
     return m_dropdownShortcutsCycleOptions;
@@ -394,6 +412,11 @@ public:
 
   void enableShowColumnNumbers(bool on);
   bool isShowColumnNumbersEnabled() const { return m_showColumnNumbers; }
+
+  void enableSyncLevelRenumberWithXsheet(bool on);
+  bool isSyncLevelRenumberWithXsheetEnabled() const {
+    return m_syncLevelRenumberWithXsheet;
+  }
 
   void enableShortcutCommandsWhileRenamingCell(bool on);
   bool isShortcutCommandsWhileRenamingCellEnabled() const {
@@ -460,6 +483,11 @@ public:
     paint = m_transpCheckPaint;
   }
 
+  void enableCurrentTimelineIndicator(bool on);
+  bool isCurrentTimelineIndicatorEnabled() const {
+    return m_currentTimelineEnabled;
+  }
+
   // Version Control  tab
 
   void enableSVN(bool on);
@@ -511,6 +539,7 @@ Q_SIGNALS:
 
   void stopAutoSave();
   void startAutoSave();
+  void autoSavePeriodChanged();
 
 private:
   std::unique_ptr<QSettings> m_settings;
@@ -555,7 +584,10 @@ private:
       m_sceneNumberingEnabled, m_animationSheetEnabled, m_inksOnly,
       m_startupPopupEnabled;
   bool m_fillOnlySavebox, m_show0ThickLines, m_regionAntialias;
-  bool m_onionSkinDuringPlayback, m_ignoreImageDpi;
+  bool m_onionSkinDuringPlayback, m_ignoreImageDpi,
+      m_syncLevelRenumberWithXsheet;
+  bool m_keepFillOnVectorSimplify, m_useHigherDpiOnVectorSimplify;
+  bool m_downArrowInLevelStripCreatesNewFrame;
   TPixel32 m_viewerBGColor, m_previewBGColor, m_chessboardColor1,
       m_chessboardColor2;
   bool m_showRasterImagesDarkenBlendedInViewer,
@@ -614,6 +646,12 @@ private:
 
   QString m_xsheetLayoutPreference,
       m_loadedXsheetLayout;  // Classic, Classic-revised, compact
+
+  // defines which alias to be used if both are possible on coding file path
+  PathAliasPriority m_pathAliasPriority;
+
+  bool m_currentTimelineEnabled;
+
 private:
   Preferences();
   ~Preferences();

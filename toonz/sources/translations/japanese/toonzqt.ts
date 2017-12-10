@@ -151,7 +151,7 @@ Possibly the preset file has been corrupted</source>
     </message>
     <message>
         <source>The preset name must not use &apos;,&apos;(comma).</source>
-        <translation>プリセット名に &quot;,&quot; (カンマ)を使用できません</translation>
+        <translation>プリセット名に &quot;,&quot; (カンマ)を使用できません。</translation>
     </message>
     <message>
         <source>DPI</source>
@@ -230,6 +230,14 @@ Possibly the preset file has been corrupted</source>
     <message>
         <source>Resulting Level Info</source>
         <translation type="vanished">完成レベルの情報</translation>
+    </message>
+    <message>
+        <source>N/S</source>
+        <translation>Y</translation>
+    </message>
+    <message>
+        <source>E/W</source>
+        <translation>X</translation>
     </message>
 </context>
 <context>
@@ -855,6 +863,18 @@ Possibly the preset file has been corrupted</source>
         <source>????</source>
         <translation>????</translation>
     </message>
+    <message>
+        <source>From</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>To</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Step</source>
+        <translation>ステップ</translation>
+    </message>
 </context>
 <context>
     <name>FunctionSelection</name>
@@ -1003,7 +1023,7 @@ Possibly the preset file has been corrupted</source>
     </message>
     <message>
         <source>Output</source>
-        <translation type="vanished">Output</translation>
+        <translation>Output</translation>
     </message>
     <message>
         <source>Out</source>
@@ -1170,7 +1190,7 @@ Select FX nodes and related links before copying or cutting the selection you wa
     </message>
     <message>
         <source>XSheet</source>
-        <translation type="vanished">XSheet</translation>
+        <translation>XSheet</translation>
     </message>
     <message>
         <source>X</source>
@@ -2197,7 +2217,7 @@ Are you sure?</source>
     </message>
     <message>
         <source>Plain</source>
-        <translation>標準</translation>
+        <translation type="vanished">標準</translation>
     </message>
     <message>
         <source>Texture</source>
@@ -2205,11 +2225,11 @@ Are you sure?</source>
     </message>
     <message>
         <source>Special</source>
-        <translation>特殊</translation>
+        <translation type="vanished">特殊</translation>
     </message>
     <message>
         <source>Custom</source>
-        <translation>カスタム</translation>
+        <translation type="vanished">カスタム</translation>
     </message>
     <message>
         <source>Vector Brush</source>
@@ -2227,7 +2247,78 @@ Apply</source>
     </message>
     <message>
         <source>MyPaint Brush</source>
-        <translation>MyPaint ブラシ</translation>
+        <translation type="vanished">MyPaint ブラシ</translation>
+    </message>
+    <message>
+        <source>- Style not Selected -</source>
+        <translation>- スタイルが選択されていません -</translation>
+    </message>
+    <message>
+        <source>[CLEANUP]  </source>
+        <translation>[トレース]  </translation>
+    </message>
+    <message>
+        <source>[STUDIO]  </source>
+        <translation>[スタジオ]  </translation>
+    </message>
+    <message>
+        <source>[LEVEL]  </source>
+        <translation>[レベル]  </translation>
+    </message>
+    <message>
+        <source>- Style is Not Valid -</source>
+        <translation>- スタイルが無効です -</translation>
+    </message>
+    <message>
+        <source>Generated</source>
+        <translation>自動生成</translation>
+    </message>
+    <message>
+        <source>Trail</source>
+        <translation>スタンプ</translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation>色</translation>
+    </message>
+    <message>
+        <source>Vector</source>
+        <translation>ベクター</translation>
+    </message>
+    <message>
+        <source>Raster</source>
+        <translation>ラスター</translation>
+    </message>
+</context>
+<context>
+    <name>StyleEditorGUI::ColorChannelControl</name>
+    <message>
+        <source>R</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>G</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>B</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>A</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>H</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>S</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>V</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -2242,18 +2333,22 @@ Apply</source>
     </message>
     <message>
         <source>Matte</source>
-        <translation>アルファ</translation>
+        <translation type="vanished">アルファ</translation>
     </message>
     <message>
         <source>RGB</source>
         <translation>RGB</translation>
+    </message>
+    <message>
+        <source>Alpha</source>
+        <translation>アルファ</translation>
     </message>
 </context>
 <context>
     <name>StyleEditorGUI::SettingsPage</name>
     <message>
         <source>Autopaint for Lines</source>
-        <translation>色トレース線として、自動塗りつぶし</translation>
+        <translation>色トレース線として、含め塗りを行う</translation>
     </message>
     <message>
         <source>Reset to default</source>
@@ -2307,11 +2402,19 @@ Apply</source>
     </message>
     <message>
         <source>Infos</source>
-        <translation>情報</translation>
+        <translation type="vanished">情報</translation>
     </message>
     <message>
         <source> Clear </source>
         <translation>クリア</translation>
+    </message>
+    <message>
+        <source>Display:  </source>
+        <translation>表示：</translation>
+    </message>
+    <message>
+        <source>Info</source>
+        <translation>情報</translation>
     </message>
 </context>
 <context>
@@ -2319,6 +2422,10 @@ Apply</source>
     <message>
         <source>&amp;Reset Center</source>
         <translation>基準点をリセット (&amp;R)</translation>
+    </message>
+    <message>
+        <source>Table</source>
+        <translation>テーブル</translation>
     </message>
 </context>
 <context>

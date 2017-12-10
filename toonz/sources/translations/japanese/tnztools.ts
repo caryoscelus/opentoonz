@@ -9,7 +9,7 @@
     </message>
     <message>
         <source>Position</source>
-        <translation>位置</translation>
+        <translation type="vanished">位置</translation>
     </message>
     <message>
         <source>E/W:</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>Rotation</source>
-        <translation>回転</translation>
+        <translation type="vanished">回転</translation>
     </message>
     <message>
         <source>Scale</source>
@@ -74,6 +74,14 @@
     <message>
         <source>Center Position</source>
         <translation>センター位置</translation>
+    </message>
+    <message>
+        <source>Position:</source>
+        <translation>位置:</translation>
+    </message>
+    <message>
+        <source>Rotation:</source>
+        <translation>回転:</translation>
     </message>
 </context>
 <context>
@@ -141,6 +149,14 @@
     <message>
         <source>Smooth:</source>
         <translation>平滑化：</translation>
+    </message>
+    <message>
+        <source>Range:</source>
+        <translation>中割り：</translation>
+    </message>
+    <message>
+        <source>Snap</source>
+        <translation>スナップ</translation>
     </message>
 </context>
 <context>
@@ -332,6 +348,10 @@
         <source>Segment</source>
         <translation>線分の自動検出</translation>
     </message>
+    <message>
+        <source>Autopaint Lines</source>
+        <translation>含め塗り</translation>
+    </message>
 </context>
 <context>
     <name>FingerTool</name>
@@ -377,6 +397,14 @@
     <message>
         <source>Opacity</source>
         <translation>不透明度</translation>
+    </message>
+    <message>
+        <source>Eraser</source>
+        <translation>消しゴムモード</translation>
+    </message>
+    <message>
+        <source>Lock Alpha</source>
+        <translation>透明部分の保護</translation>
     </message>
 </context>
 <context>

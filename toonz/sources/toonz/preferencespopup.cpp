@@ -341,10 +341,10 @@ void PreferencesPopup::onRoomChoiceChanged(int index) {
 //-----------------------------------------------------------------------------
 
 void PreferencesPopup::onDropdownShortcutsCycleOptionsChanged(int index) {
-	m_pref->setDropdownShortcutsCycleOptions(index);
+  m_pref->setDropdownShortcutsCycleOptions(index);
 }
 
-  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void PreferencesPopup::onInterfaceFontChanged(int index) {
   QString font = m_interfaceFont->currentText();
@@ -383,7 +383,8 @@ void PreferencesPopup::onScanLevelTypeChanged(const QString &text) {
 //-----------------------------------------------------------------------------
 
 void PreferencesPopup::onMinuteChanged() {
-  m_pref->setAutosavePeriod(m_minuteFld->getValue());
+  if (m_minuteFld->getValue() != m_pref->getAutosavePeriod())
+    m_pref->setAutosavePeriod(m_minuteFld->getValue());
 }
 
 //-----------------------------------------------------------------------------
@@ -508,6 +509,24 @@ void PreferencesPopup::onIgnoreImageDpiChanged(int index) {
 
 //-----------------------------------------------------------------------------
 
+void PreferencesPopup::onKeepFillOnVectorSimplifyChanged(int index) {
+  m_pref->setKeepFillOnVectorSimplify(index == Qt::Checked);
+}
+
+//-----------------------------------------------------------------------------
+
+void PreferencesPopup::onUseHigherDpiOnVectorSimplifyChanged(int index) {
+  m_pref->setUseHigherDpiOnVectorSimplify(index == Qt::Checked);
+}
+
+//-----------------------------------------------------------------------------
+
+void PreferencesPopup::onDownArrowInLevelStripCreatesNewFrame(int index) {
+  m_pref->setDownArrowLevelStripNewFrame(index == Qt::Checked);
+}
+
+//-----------------------------------------------------------------------------
+
 void PreferencesPopup::onSubsceneFolderChanged(int index) {
   m_pref->enableSubsceneFolder(index == Qt::Checked);
 }
@@ -599,12 +618,25 @@ void PreferencesPopup::onDefaultViewerChanged(int index) {
 //-----------------------------------------------------------------------------
 
 void PreferencesPopup::onAutoSaveChanged(bool on) {
-  m_pref->enableAutosave(on);
+  if (m_autoSaveGroup->isChecked() != m_pref->isAutosaveEnabled())
+    m_pref->enableAutosave(on);
   if (on && !m_autoSaveSceneCB->isChecked() &&
       !m_autoSaveOtherFilesCB->isChecked()) {
     m_autoSaveSceneCB->setChecked(true);
     m_autoSaveOtherFilesCB->setChecked(true);
   }
+}
+
+//-----------------------------------------------------------------------------
+
+void PreferencesPopup::onAutoSaveExternallyChanged() {
+  m_autoSaveGroup->setChecked(Preferences::instance()->isAutosaveEnabled());
+}
+
+//-----------------------------------------------------------------------------
+
+void PreferencesPopup::onAutoSavePeriodExternallyChanged() {
+  m_minuteFld->setValue(m_pref->getAutosavePeriod());
 }
 
 //-----------------------------------------------------------------------------
@@ -1049,6 +1081,12 @@ void PreferencesPopup::onShowXSheetToolbarClicked(bool checked) {
 
 //-----------------------------------------------------------------------------
 
+void PreferencesPopup::onSyncLevelRenumberWithXsheetChanged(int checked) {
+  m_pref->enableSyncLevelRenumberWithXsheet(checked);
+}
+
+//-----------------------------------------------------------------------------
+
 void PreferencesPopup::onExpandFunctionHeaderClicked(bool checked) {
   m_pref->enableExpandFunctionHeader(checked);
 }
@@ -1092,6 +1130,21 @@ void PreferencesPopup::onWatchFileSystemClicked(int on) {
       "WatchFileSystem");
 }
 
+//-----------------------------------------------------------------------------
+
+void PreferencesPopup::onPathAliasPriorityChanged(int index) {
+  m_pref->setPathAliasPriority(
+      static_cast<Preferences::PathAliasPriority>(index));
+  TApp::instance()->getCurrentScene()->notifyPreferenceChanged(
+      "PathAliasPriority");
+}
+
+//-----------------------------------------------------------------------------
+
+void PreferencesPopup::onShowCurrentTimelineChanged(int index) {
+  m_pref->enableCurrentTimelineIndicator(index == Qt::Checked);
+}
+
 //**********************************************************************************
 //    PrefencesPopup's  constructor
 //**********************************************************************************
@@ -1130,7 +1183,6 @@ PreferencesPopup::PreferencesPopup()
   CheckBox *replaceAfterSaveLevelAsCB =
       new CheckBox(tr("Replace Toonz Level after SaveLevelAs command"), this);
 
-  m_cellsDragBehaviour = new QComboBox();
   m_undoMemorySize =
       new DVGui::IntLineEdit(this, m_pref->getUndoMemorySize(), 0, 2000);
   m_levelsBackup = new CheckBox(tr("Backup Animation Levels when Saving"));
@@ -1148,6 +1200,8 @@ PreferencesPopup::PreferencesPopup()
   m_customProjectRootLabel     = new QLabel(tr("Custom Project Path(s): "));
   m_projectRootDirections      = new QLabel(
       tr("Advanced: Multiple paths can be separated by ** (No Spaces)"));
+
+  QComboBox *pathAliasPriority = new QComboBox();
 
   QLabel *note_general =
       new QLabel(tr("* Changes will take effect the next time you run Toonz"));
@@ -1188,24 +1242,12 @@ PreferencesPopup::PreferencesPopup()
       new CheckBox(tr("Move Current Frame by Clicking on Xsheet / Numerical "
                       "Columns Cell Area"),
                    this);
-  // Viewer BG color
-  m_viewerBgColorFld = new ColorField(this, false, m_pref->getViewerBgColor());
-  // Preview BG color
-  m_previewBgColorFld =
-      new ColorField(this, false, m_pref->getPreviewBgColor());
-  // bg chessboard colors
-  TPixel32 col1, col2;
-  m_pref->getChessboardColors(col1, col2);
-  m_chessboardColor1Fld = new ColorField(this, false, col1);
-  m_chessboardColor2Fld = new ColorField(this, false, col2);
-  CheckBox *openFlipbookAfterCB =
-      new CheckBox(tr("Open Flipbook after Rendering"), this);
   CheckBox *actualPixelOnSceneModeCB =
       new CheckBox(tr("Enable Actual Pixel View on Scene Editing Mode"), this);
   CheckBox *levelNameOnEachMarkerCB =
       new CheckBox(tr("Display Level Name on Each Marker"), this);
-  CheckBox *showRasterImageDarkenBlendedInViewerCB = new CheckBox(
-      tr("Show Raster Images Darken Blended in Camstand View"), this);
+  CheckBox *showRasterImageDarkenBlendedInViewerCB =
+      new CheckBox(tr("Show Raster Images Darken Blended"), this);
   CheckBox *showShowFrameNumberWithLettersCB = new CheckBox(
       tr("Show \"ABC\" Appendix to the Frame Number in Xsheet Cell"), this);
   QComboBox *viewerZoomCenterComboBox = new QComboBox(this);
@@ -1222,7 +1264,7 @@ PreferencesPopup::PreferencesPopup()
   CheckBox *show0ThickLinesCB =
       new CheckBox(tr("Show Lines with Thickness 0"), this);
   CheckBox *regionAntialiasCB =
-      new CheckBox(tr("Antialiased region boundaries"), this);
+      new CheckBox(tr("Antialiased Region Boundaries"), this);
 
   //--- Loading ------------------------------
   categoryList->addItem(tr("Loading"));
@@ -1275,19 +1317,25 @@ PreferencesPopup::PreferencesPopup()
 
   CheckBox *keepOriginalCleanedUpCB =
       new CheckBox(tr("Keep Original Cleaned Up Drawings As Backup"), this);
-  CheckBox *multiLayerStylePickerCB = new CheckBox(
-      tr("Multi Layer Style Picker : Switch Levels by Picking"), this);
-  CheckBox *useSaveboxToLimitFillingOpCB =
-      new CheckBox(tr("Use the TLV Savebox to Limit Filling Operations"), this);
   CheckBox *minimizeSaveboxAfterEditingCB =
       new CheckBox(tr("Minimize Savebox after Editing"), this);
   m_useNumpadForSwitchingStyles =
       new CheckBox(tr("Use Numpad and Tab keys for Switching Styles"), this);
+  m_keepFillOnVectorSimplifyCB = new CheckBox(
+      tr("Keep fill when using \"Replace Vectors\" command"), this);
+  m_useHigherDpiOnVectorSimplifyCB = new CheckBox(
+      tr("Use higher DPI for calculations - Slower but more accurate"), this);
+  m_downArrowInLevelStripCreatesNewFrame = new CheckBox(
+      tr("Down Arrow at End of Level Strip Creates a New Frame"), this);
 
   //--- Tools -------------------------------
   categoryList->addItem(tr("Tools"));
 
   m_dropdownShortcutsCycleOptionsCB = new QComboBox(this);
+  CheckBox *multiLayerStylePickerCB = new CheckBox(
+      tr("Multi Layer Style Picker : Switch Levels by Picking"), this);
+  CheckBox *useSaveboxToLimitFillingOpCB =
+      new CheckBox(tr("Use the TLV Savebox to Limit Filling Operations"), this);
 
   //--- Xsheet ------------------------------
   categoryList->addItem(tr("Xsheet"));
@@ -1310,17 +1358,24 @@ PreferencesPopup::PreferencesPopup()
   m_showXSheetToolbar = new QGroupBox(tr("Show Toolbar in the XSheet "), this);
   m_showXSheetToolbar->setCheckable(true);
   m_expandFunctionHeader = new CheckBox(
-      tr("Expand Function Editor Header to Match XSheet Toolbar Height "
-         "(Requires Restart)"),
+      tr("Expand Function Editor Header to Match Xsheet Toolbar Height*"),
       this);
   CheckBox *showColumnNumbersCB =
       new CheckBox(tr("Show Column Numbers in Column Headers"), this);
+  m_syncLevelRenumberWithXsheet = new CheckBox(
+      tr("Sync Level Strip Drawing Number Changes with the Xsheet"));
+
   QStringList xsheetLayouts;
-  xsheetLayouts << tr("Classic") << tr("Classic-revised") << tr("Compact");
+  // options should not be translatable as they are used as key strings
+  xsheetLayouts << "Classic"
+                << "Classic-revised"
+                << "Compact";
   QComboBox *xsheetLayoutOptions = new QComboBox(this);
   xsheetLayoutOptions->addItems(xsheetLayouts);
   xsheetLayoutOptions->setCurrentIndex(
       xsheetLayoutOptions->findText(m_pref->getXsheetLayoutPreference()));
+  CheckBox *showCurrentTimelineCB = new CheckBox(
+      tr("Show Current Time Indicator (Timeline Mode only)"), this);
 
   QLabel *note_xsheet =
       new QLabel(tr("* Changes will take effect the next time you run Toonz"));
@@ -1342,6 +1397,8 @@ PreferencesPopup::PreferencesPopup()
   CheckBox *displayInNewFlipBookCB =
       new CheckBox(tr("Display in a New Flipbook Window"), this);
   CheckBox *fitToFlipbookCB = new CheckBox(tr("Fit to Flipbook"), this);
+  CheckBox *openFlipbookAfterCB =
+      new CheckBox(tr("Open Flipbook after Rendering"), this);
 
   //--- Onion Skin ------------------------------
   categoryList->addItem(tr("Onion Skin"));
@@ -1361,8 +1418,19 @@ PreferencesPopup::PreferencesPopup()
   m_onionPaperThickness = new DVGui::IntLineEdit(this, thickness, 0, 100);
   m_guidedDrawingStyle  = new QComboBox(this);
 
-  //--- Transparency Check ------------------------------
-  categoryList->addItem(tr("Transparency Check"));
+  //--- Colors ------------------------------
+  categoryList->addItem(tr("Colors"));
+
+  // Viewer BG color
+  m_viewerBgColorFld = new ColorField(this, false, m_pref->getViewerBgColor());
+  // Preview BG color
+  m_previewBgColorFld =
+      new ColorField(this, false, m_pref->getPreviewBgColor());
+  // bg chessboard colors
+  TPixel32 col1, col2;
+  m_pref->getChessboardColors(col1, col2);
+  m_chessboardColor1Fld = new ColorField(this, false, col1);
+  m_chessboardColor2Fld = new ColorField(this, false, col2);
 
   TPixel32 bgColor, inkColor, paintColor;
   m_pref->getTranspCheckData(bgColor, inkColor, paintColor);
@@ -1395,10 +1463,6 @@ PreferencesPopup::PreferencesPopup()
   replaceAfterSaveLevelAsCB->setChecked(
       m_pref->isReplaceAfterSaveLevelAsEnabled());
 
-  QStringList dragCellsBehaviourList;
-  dragCellsBehaviourList << tr("Cells Only") << tr("Cells and Column Data");
-  m_cellsDragBehaviour->addItems(dragCellsBehaviourList);
-  m_cellsDragBehaviour->setCurrentIndex(m_pref->getDragCellsBehaviour());
   m_levelsBackup->setChecked(m_pref->isLevelsBackupEnabled());
   sceneNumberingCB->setChecked(m_pref->isSceneNumberingEnabled());
   watchFileSystemCB->setChecked(m_pref->isWatchFileSystemEnabled());
@@ -1417,6 +1481,19 @@ PreferencesPopup::PreferencesPopup()
     m_customProjectRootLabel->hide();
     m_projectRootDirections->hide();
   }
+
+  QStringList pathAliasPriorityList;
+  pathAliasPriorityList
+      << tr("Project Folder Aliases (+drawings, +scenes, etc.)")
+      << tr("Scene Folder Alias ($scenefolder)")
+      << tr("Use Project Folder Aliases Only");
+  pathAliasPriority->addItems(pathAliasPriorityList);
+  pathAliasPriority->setCurrentIndex(
+      static_cast<int>(m_pref->getPathAliasPriority()));
+  pathAliasPriority->setToolTip(
+      tr("This option defines which alias to be used\nif both are possible on "
+         "coding file path."));
+
   //--- Interface ------------------------------
   QStringList styleSheetList;
   currentIndex = 0;
@@ -1467,7 +1544,6 @@ PreferencesPopup::PreferencesPopup()
   m_viewShrink->setValue(shrink);
   m_viewStep->setValue(step);
   moveCurrentFrameCB->setChecked(m_pref->isMoveCurrentEnabled());
-  openFlipbookAfterCB->setChecked(m_pref->isGeneratedMovieViewEnabled());
   actualPixelOnSceneModeCB->setChecked(
       m_pref->isActualPixelViewOnSceneEditingModeEnabled());
   levelNameOnEachMarkerCB->setChecked(m_pref->isLevelNameOnEachMarkerEnabled());
@@ -1558,12 +1634,16 @@ PreferencesPopup::PreferencesPopup()
 
   //--- Drawing ------------------------------
   keepOriginalCleanedUpCB->setChecked(m_pref->isSaveUnpaintedInCleanupEnable());
-  multiLayerStylePickerCB->setChecked(m_pref->isMultiLayerStylePickerEnabled());
   minimizeSaveboxAfterEditingCB->setChecked(
       m_pref->isMinimizeSaveboxAfterEditing());
-  useSaveboxToLimitFillingOpCB->setChecked(m_pref->getFillOnlySavebox());
   m_useNumpadForSwitchingStyles->setChecked(
       m_pref->isUseNumpadForSwitchingStylesEnabled());
+  m_keepFillOnVectorSimplifyCB->setChecked(
+      m_pref->getKeepFillOnVectorSimplify());
+  m_useHigherDpiOnVectorSimplifyCB->setChecked(
+      m_pref->getUseHigherDpiOnVectorSimplify());
+  m_downArrowInLevelStripCreatesNewFrame->setChecked(
+      m_pref->getDownArrowLevelStripNewFrame());
   m_newLevelToCameraSizeCB->setChecked(
       m_pref->isNewLevelSizeToCameraSizeEnabled());
   QStringList scanLevelTypes;
@@ -1623,6 +1703,8 @@ PreferencesPopup::PreferencesPopup()
   m_dropdownShortcutsCycleOptionsCB->addItems(dropdownBehaviorTypes);
   m_dropdownShortcutsCycleOptionsCB->setCurrentIndex(
       m_pref->getDropdownShortcutsCycleOptions() ? 1 : 0);
+  multiLayerStylePickerCB->setChecked(m_pref->isMultiLayerStylePickerEnabled());
+  useSaveboxToLimitFillingOpCB->setChecked(m_pref->getFillOnlySavebox());
 
   //--- Xsheet ------------------------------
   xsheetAutopanDuringPlaybackCB->setChecked(m_pref->isXsheetAutopanEnabled());
@@ -1641,6 +1723,10 @@ PreferencesPopup::PreferencesPopup()
   m_showXSheetToolbar->setChecked(m_pref->isShowXSheetToolbarEnabled());
   m_expandFunctionHeader->setChecked(m_pref->isExpandFunctionHeaderEnabled());
   showColumnNumbersCB->setChecked(m_pref->isShowColumnNumbersEnabled());
+  m_syncLevelRenumberWithXsheet->setChecked(
+      m_pref->isSyncLevelRenumberWithXsheetEnabled());
+  showCurrentTimelineCB->setChecked(
+      m_pref->isCurrentTimelineIndicatorEnabled());
 
   //--- Animation ------------------------------
   QStringList list;
@@ -1661,6 +1747,7 @@ PreferencesPopup::PreferencesPopup()
   rewindAfterPlaybackCB->setChecked(m_pref->rewindAfterPlaybackEnabled());
   displayInNewFlipBookCB->setChecked(m_pref->previewAlwaysOpenNewFlipEnabled());
   fitToFlipbookCB->setChecked(m_pref->fitToFlipbookEnabled());
+  openFlipbookAfterCB->setChecked(m_pref->isGeneratedMovieViewEnabled());
 
   //--- Onion Skin ------------------------------
   m_onionSkinVisibility->setChecked(m_pref->isOnionSkinEnabled());
@@ -1775,6 +1862,18 @@ PreferencesPopup::PreferencesPopup()
       }
       projectGroupBox->setLayout(projectRootLay);
       generalFrameLay->addWidget(projectGroupBox, 0);
+
+      QHBoxLayout *pathAliasLay = new QHBoxLayout();
+      pathAliasLay->setMargin(0);
+      pathAliasLay->setSpacing(5);
+      {
+        QLabel *PAPLabel = new QLabel(tr("Path Alias Priority:"), this);
+        PAPLabel->setToolTip(pathAliasPriority->toolTip());
+        pathAliasLay->addWidget(PAPLabel, 0);
+        pathAliasLay->addWidget(pathAliasPriority, 0);
+        pathAliasLay->addStretch(1);
+      }
+      generalFrameLay->addLayout(pathAliasLay, 0);
       generalFrameLay->addStretch(1);
 
       generalFrameLay->addWidget(note_general, 0);
@@ -1793,9 +1892,10 @@ PreferencesPopup::PreferencesPopup()
       styleLay->setHorizontalSpacing(5);
       styleLay->setVerticalSpacing(10);
       {
-        styleLay->addWidget(new QLabel(tr("Style:")), 0, 0,
+        styleLay->addWidget(new QLabel(tr("Theme:")), 0, 0,
                             Qt::AlignRight | Qt::AlignVCenter);
-        styleLay->addWidget(styleSheetType, 0, 1);
+        styleLay->addWidget(styleSheetType, 0, 1,
+                            Qt::AlignLeft | Qt::AlignVCenter);
 
         styleLay->addWidget(new QLabel(tr("Pixels Only:"), this), 1, 0,
                             Qt::AlignRight | Qt::AlignVCenter);
@@ -1803,23 +1903,22 @@ PreferencesPopup::PreferencesPopup()
 
         styleLay->addWidget(new QLabel(tr("Unit:"), this), 2, 0,
                             Qt::AlignRight | Qt::AlignVCenter);
-        styleLay->addWidget(m_unitOm, 2, 1);
+        styleLay->addWidget(m_unitOm, 2, 1, Qt::AlignLeft | Qt::AlignVCenter);
 
         styleLay->addWidget(new QLabel(tr("Camera Unit:"), this), 3, 0,
                             Qt::AlignRight | Qt::AlignVCenter);
-        styleLay->addWidget(m_cameraUnitOm, 3, 1);
+        styleLay->addWidget(m_cameraUnitOm, 3, 1,
+                            Qt::AlignLeft | Qt::AlignVCenter);
 
         styleLay->addWidget(new QLabel(tr("Rooms*:"), this), 4, 0,
                             Qt::AlignRight | Qt::AlignVCenter);
-        styleLay->addWidget(roomChoice, 4, 1);
+        styleLay->addWidget(roomChoice, 4, 1, Qt::AlignLeft | Qt::AlignVCenter);
       }
       styleLay->setColumnStretch(0, 0);
       styleLay->setColumnStretch(1, 0);
       styleLay->setColumnStretch(2, 1);
       userInterfaceFrameLay->addLayout(styleLay, 0);
 
-      userInterfaceFrameLay->addWidget(openFlipbookAfterCB, 0,
-                                       Qt::AlignLeft | Qt::AlignVCenter);
       userInterfaceFrameLay->addWidget(moveCurrentFrameCB, 0,
                                        Qt::AlignLeft | Qt::AlignVCenter);
       userInterfaceFrameLay->addWidget(actualPixelOnSceneModeCB, 0,
@@ -1831,66 +1930,60 @@ PreferencesPopup::PreferencesPopup()
       userInterfaceFrameLay->addWidget(showShowFrameNumberWithLettersCB, 0,
                                        Qt::AlignLeft | Qt::AlignVCenter);
 
-      QGridLayout *bgColorsLay = new QGridLayout();
-      bgColorsLay->setMargin(0);
-      bgColorsLay->setHorizontalSpacing(5);
-      bgColorsLay->setVerticalSpacing(10);
+      QGridLayout *interfaceBottomLay = new QGridLayout();
+      interfaceBottomLay->setMargin(0);
+      interfaceBottomLay->setHorizontalSpacing(5);
+      interfaceBottomLay->setVerticalSpacing(10);
       {
-        bgColorsLay->addWidget(new QLabel(tr("Icon Size *"), this), 0, 0,
-                               Qt::AlignRight | Qt::AlignVCenter);
-        bgColorsLay->addWidget(m_iconSizeLx, 0, 1);
-        bgColorsLay->addWidget(new QLabel(tr("X"), this), 0, 2,
-                               Qt::AlignCenter);
-        bgColorsLay->addWidget(m_iconSizeLy, 0, 3);
+        interfaceBottomLay->addWidget(new QLabel(tr("Icon Size *"), this), 0, 0,
+                                      Qt::AlignRight | Qt::AlignVCenter);
+        interfaceBottomLay->addWidget(m_iconSizeLx, 0, 1);
+        interfaceBottomLay->addWidget(new QLabel(tr("X"), this), 0, 2,
+                                      Qt::AlignCenter);
+        interfaceBottomLay->addWidget(m_iconSizeLy, 0, 3);
 
-        bgColorsLay->addWidget(new QLabel(tr("Viewer  Shrink"), this), 1, 0,
-                               Qt::AlignRight | Qt::AlignVCenter);
-        bgColorsLay->addWidget(m_viewShrink, 1, 1);
-        bgColorsLay->addWidget(new QLabel(tr("Step"), this), 1, 3,
-                               Qt::AlignRight | Qt::AlignVCenter);
-        bgColorsLay->addWidget(m_viewStep, 1, 4);
+        interfaceBottomLay->addWidget(new QLabel(tr("Viewer  Shrink"), this), 1,
+                                      0, Qt::AlignRight | Qt::AlignVCenter);
+        interfaceBottomLay->addWidget(m_viewShrink, 1, 1);
+        interfaceBottomLay->addWidget(new QLabel(tr("Step"), this), 1, 3,
+                                      Qt::AlignRight | Qt::AlignVCenter);
+        interfaceBottomLay->addWidget(m_viewStep, 1, 4);
 
-        bgColorsLay->addWidget(new QLabel(tr("Viewer BG Color"), this), 2, 0,
-                               Qt::AlignRight | Qt::AlignVCenter);
-        bgColorsLay->addWidget(m_viewerBgColorFld, 2, 1, 1, 5);
-
-        bgColorsLay->addWidget(new QLabel(tr("Preview BG Color"), this), 3, 0,
-                               Qt::AlignRight | Qt::AlignVCenter);
-        bgColorsLay->addWidget(m_previewBgColorFld, 3, 1, 1, 5);
-
-        bgColorsLay->addWidget(new QLabel(tr("ChessBoard Color 1"), this), 4, 0,
-                               Qt::AlignRight | Qt::AlignVCenter);
-        bgColorsLay->addWidget(m_chessboardColor1Fld, 4, 1, 1, 5);
-
-        bgColorsLay->addWidget(new QLabel(tr("Chessboard Color 2"), this), 5, 0,
-                               Qt::AlignRight | Qt::AlignVCenter);
-        bgColorsLay->addWidget(m_chessboardColor2Fld, 5, 1, 1, 5);
-
-        bgColorsLay->addWidget(new QLabel(tr("Viewer Zoom Center"), this), 6, 0,
-                               Qt::AlignRight | Qt::AlignVCenter);
-        bgColorsLay->addWidget(viewerZoomCenterComboBox, 6, 1, 1, 4);
+        interfaceBottomLay->addWidget(
+            new QLabel(tr("Viewer Zoom Center"), this), 2, 0,
+            Qt::AlignRight | Qt::AlignVCenter);
+        interfaceBottomLay->addWidget(viewerZoomCenterComboBox, 2, 1, 1, 5,
+                                      Qt::AlignLeft | Qt::AlignVCenter);
 
         if (languageType) {
-          bgColorsLay->addWidget(new QLabel(tr("Language *:")), 7, 0,
-                                 Qt::AlignRight | Qt::AlignVCenter);
-          bgColorsLay->addWidget(languageType, 7, 1, 1, 4);
+          interfaceBottomLay->addWidget(new QLabel(tr("Language *:")), 3, 0,
+                                        Qt::AlignRight | Qt::AlignVCenter);
+          interfaceBottomLay->addWidget(languageType, 3, 1, 1, 5,
+                                        Qt::AlignLeft | Qt::AlignVCenter);
         }
         if (m_interfaceFont->count() > 0) {
-          bgColorsLay->addWidget(new QLabel(tr("Font *:")), 8, 0,
-                                 Qt::AlignRight | Qt::AlignVCenter);
-          bgColorsLay->addWidget(m_interfaceFont, 8, 1, 1, 4);
-          bgColorsLay->addWidget(new QLabel(tr("Font Weight *:")), 9, 0,
-                                 Qt::AlignRight | Qt::AlignVCenter);
-          bgColorsLay->addWidget(m_interfaceFontWeight, 9, 1, 1, 4);
+          interfaceBottomLay->addWidget(new QLabel(tr("Font *:")), 4, 0,
+                                        Qt::AlignRight | Qt::AlignVCenter);
+          QHBoxLayout *fontLay = new QHBoxLayout();
+          fontLay->setSpacing(5);
+          fontLay->setMargin(0);
+          {
+            fontLay->addWidget(m_interfaceFont);
+            fontLay->addSpacing(10);
+            fontLay->addWidget(new QLabel(tr("Weight *:")));
+            fontLay->addWidget(m_interfaceFontWeight);
+            fontLay->addStretch(1);
+          }
+          interfaceBottomLay->addLayout(fontLay, 4, 1, 1, 5);
         }
       }
-      bgColorsLay->setColumnStretch(0, 0);
-      bgColorsLay->setColumnStretch(1, 0);
-      bgColorsLay->setColumnStretch(2, 0);
-      bgColorsLay->setColumnStretch(3, 0);
-      bgColorsLay->setColumnStretch(4, 0);
-      bgColorsLay->setColumnStretch(5, 1);
-      userInterfaceFrameLay->addLayout(bgColorsLay, 0);
+      interfaceBottomLay->setColumnStretch(0, 0);
+      interfaceBottomLay->setColumnStretch(1, 0);
+      interfaceBottomLay->setColumnStretch(2, 0);
+      interfaceBottomLay->setColumnStretch(3, 0);
+      interfaceBottomLay->setColumnStretch(4, 0);
+      interfaceBottomLay->setColumnStretch(5, 1);
+      userInterfaceFrameLay->addLayout(interfaceBottomLay, 0);
 
       userInterfaceFrameLay->addStretch(1);
 
@@ -1959,8 +2052,8 @@ PreferencesPopup::PreferencesPopup()
         cacheLay->addWidget(
             new QLabel(
                 tr("Palette Type on Loading Raster Image as Color Model:")),
-            3, 0, Qt::AlignRight | Qt::AlignVCenter);
-        cacheLay->addWidget(paletteTypeForRasterColorModelComboBox, 3, 1, 1, 5);
+            3, 0, 1, 6);
+        cacheLay->addWidget(paletteTypeForRasterColorModelComboBox, 4, 1, 1, 5);
       }
       cacheLay->setColumnStretch(0, 0);
       cacheLay->setColumnStretch(1, 0);
@@ -1983,20 +2076,12 @@ PreferencesPopup::PreferencesPopup()
     {
       ioLay->addWidget(
           new QLabel(
-              tr("OpenToonz can use FFmpeg for additional file formats.")),
-          0, Qt::AlignCenter | Qt::AlignVCenter);
-      ioLay->addWidget(new QLabel(tr("FFmpeg is not bundled with OpenToonz")),
-                       0, Qt::AlignCenter | Qt::AlignVCenter);
-      ioLay->addWidget(new QLabel(" "), 0, Qt::AlignCenter | Qt::AlignVCenter);
-      ioLay->addWidget(new QLabel(tr("NOTE: This is an experimental feature.")),
-                       0, Qt::AlignCenter | Qt::AlignVCenter);
-      ioLay->addWidget(new QLabel(tr("Please SAVE YOUR WORK before exporting "
-                                     "in MP4, WEBM, or GIF format.")),
-                       0, Qt::AlignCenter | Qt::AlignVCenter);
-      ioLay->addWidget(new QLabel(" "), 0, Qt::AlignCenter | Qt::AlignVCenter);
-      ioLay->addWidget(new QLabel(tr("Please provide the path where FFmpeg is "
-                                     "located on your computer.")),
-                       0, Qt::AlignLeft | Qt::AlignVCenter);
+              tr("OpenToonz can use FFmpeg for additional file formats.\n") +
+              tr("FFmpeg is not bundled with OpenToonz.\n") +
+              tr("Please provide the path where FFmpeg is located on your "
+                 "computer.")),
+          0, Qt::AlignLeft | Qt::AlignVCenter);
+
       QGridLayout *ioGridLay = new QGridLayout();
       ioGridLay->setVerticalSpacing(10);
       ioGridLay->setHorizontalSpacing(15);
@@ -2010,17 +2095,16 @@ PreferencesPopup::PreferencesPopup()
             new QLabel(tr("Number of seconds to wait for FFmpeg to complete "
                           "processing the output:")),
             2, 0, 1, 4);
-        ioGridLay->addWidget(
-            new QLabel(tr("Note: FFmpeg begins working once all images "
-                          "have been processed.")),
-            3, 0, 1, 4);
+        ioGridLay->addWidget(new QLabel(tr("Note: FFmpeg begins working once "
+                                           "all images have been processed.")),
+                             3, 0, 1, 4);
         ioGridLay->addWidget(new QLabel(tr("FFmpeg Timeout:")), 4, 0,
                              Qt::AlignRight);
         ioGridLay->addWidget(m_ffmpegTimeout, 4, 1, 1, 3);
         ioGridLay->addWidget(new QLabel(" "), 5, 0);
         ioGridLay->addWidget(
-            new QLabel(tr("Please indicate where you would like "
-                          "exports from Fast Render(MP4) to go.")),
+            new QLabel(tr("Please indicate where you would like exports from "
+                          "Fast Render(MP4) to go.")),
             6, 0, 1, 4);
         ioGridLay->addWidget(new QLabel(tr("Fast Render Path: ")), 7, 0,
                              Qt::AlignRight);
@@ -2047,11 +2131,13 @@ PreferencesPopup::PreferencesPopup()
       {
         drawingTopLay->addWidget(new QLabel(tr("Scan File Format:")), 0, 0,
                                  Qt::AlignRight);
-        drawingTopLay->addWidget(m_defScanLevelType, 0, 1, 1, 3);
+        drawingTopLay->addWidget(m_defScanLevelType, 0, 1, 1, 3,
+                                 Qt::AlignLeft | Qt::AlignVCenter);
 
         drawingTopLay->addWidget(new QLabel(tr("Default Level Type:")), 1, 0,
                                  Qt::AlignRight);
-        drawingTopLay->addWidget(m_defLevelType, 1, 1, 1, 3);
+        drawingTopLay->addWidget(m_defLevelType, 1, 1, 1, 3,
+                                 Qt::AlignLeft | Qt::AlignVCenter);
         drawingTopLay->addWidget(m_newLevelToCameraSizeCB, 2, 0, 1, 3);
         drawingTopLay->addWidget(new QLabel(tr("Width:")), 3, 0,
                                  Qt::AlignRight);
@@ -2063,10 +2149,12 @@ PreferencesPopup::PreferencesPopup()
         drawingTopLay->addWidget(m_defLevelDpi, 4, 1);
         drawingTopLay->addWidget(new QLabel(tr("Autocreation:")), 5, 0,
                                  Qt::AlignRight);
-        drawingTopLay->addWidget(m_autocreationType, 5, 1, 1, 3);
+        drawingTopLay->addWidget(m_autocreationType, 5, 1, 1, 3,
+                                 Qt::AlignLeft | Qt::AlignVCenter);
         drawingTopLay->addWidget(new QLabel(tr("Vector Snapping:")), 6, 0,
                                  Qt::AlignRight);
-        drawingTopLay->addWidget(m_vectorSnappingTargetCB, 6, 1, 1, 3);
+        drawingTopLay->addWidget(m_vectorSnappingTargetCB, 6, 1, 1, 3,
+                                 Qt::AlignLeft | Qt::AlignVCenter);
       }
       drawingFrameLay->addLayout(drawingTopLay, 0);
 
@@ -2074,12 +2162,19 @@ PreferencesPopup::PreferencesPopup()
                                  Qt::AlignLeft | Qt::AlignVCenter);
       drawingFrameLay->addWidget(minimizeSaveboxAfterEditingCB, 0,
                                  Qt::AlignLeft | Qt::AlignVCenter);  // 6.4
-      drawingFrameLay->addWidget(useSaveboxToLimitFillingOpCB, 0,
-                                 Qt::AlignLeft | Qt::AlignVCenter);
-      drawingFrameLay->addWidget(multiLayerStylePickerCB, 0,
-                                 Qt::AlignLeft | Qt::AlignVCenter);
       drawingFrameLay->addWidget(m_useNumpadForSwitchingStyles, 0,
                                  Qt::AlignLeft | Qt::AlignVCenter);
+      drawingFrameLay->addWidget(m_downArrowInLevelStripCreatesNewFrame, 0,
+                                 Qt::AlignLeft | Qt::AlignVCenter);
+      QGroupBox *replaceVectorGroupBox = new QGroupBox(
+          tr("Replace Vectors with Simplified Vectors Command"), this);
+      QVBoxLayout *replaceVectorsLay = new QVBoxLayout();
+      replaceVectorsLay->setMargin(10);
+      replaceVectorsLay->setSpacing(10);
+      replaceVectorsLay->addWidget(m_keepFillOnVectorSimplifyCB);
+      replaceVectorsLay->addWidget(m_useHigherDpiOnVectorSimplifyCB);
+      replaceVectorGroupBox->setLayout(replaceVectorsLay);
+      drawingFrameLay->addWidget(replaceVectorGroupBox, 0);
       drawingFrameLay->addStretch(1);
     }
     drawingBox->setLayout(drawingFrameLay);
@@ -2100,13 +2195,18 @@ PreferencesPopup::PreferencesPopup()
       toolsFrameLay->addWidget(new QLabel(tr("Dropdown Shortcuts:")), 0, 0,
                                Qt::AlignRight | Qt::AlignVCenter);
       toolsFrameLay->addWidget(m_dropdownShortcutsCycleOptionsCB, 0, 1);
+      toolsFrameLay->addWidget(useSaveboxToLimitFillingOpCB, 1, 0, 1, 3,
+                               Qt::AlignLeft | Qt::AlignVCenter);
+      toolsFrameLay->addWidget(multiLayerStylePickerCB, 2, 0, 1, 3,
+                               Qt::AlignLeft | Qt::AlignVCenter);
     }
     toolsFrameLay->setColumnStretch(0, 0);
     toolsFrameLay->setColumnStretch(1, 0);
     toolsFrameLay->setColumnStretch(2, 1);
     toolsFrameLay->setRowStretch(0, 0);
     toolsFrameLay->setRowStretch(1, 0);
-    toolsFrameLay->setRowStretch(2, 1);
+    toolsFrameLay->setRowStretch(2, 0);
+    toolsFrameLay->setRowStretch(3, 1);
     toolsBox->setLayout(toolsFrameLay);
     stackedWidget->addWidget(toolsBox);
 
@@ -2121,19 +2221,22 @@ PreferencesPopup::PreferencesPopup()
       xsheetFrameLay->setHorizontalSpacing(15);
       xsheetFrameLay->setVerticalSpacing(10);
       {
-        xsheetFrameLay->addWidget(new QLabel(tr("Layout Preference*:")), 0, 0,
-                                  Qt::AlignRight | Qt::AlignVCenter);
-        xsheetFrameLay->addWidget(xsheetLayoutOptions, 0, 1);
+        xsheetFrameLay->addWidget(new QLabel(tr("Column Header Layout*:")), 0,
+                                  0, Qt::AlignRight | Qt::AlignVCenter);
+        xsheetFrameLay->addWidget(xsheetLayoutOptions, 0, 1, 1, 2,
+                                  Qt::AlignLeft | Qt::AlignVCenter);
 
         xsheetFrameLay->addWidget(new QLabel(tr("Next/Previous Step Frames:")),
                                   1, 0, Qt::AlignRight | Qt::AlignVCenter);
-        xsheetFrameLay->addWidget(m_xsheetStep, 1, 1);
+        xsheetFrameLay->addWidget(m_xsheetStep, 1, 1, 1, 2,
+                                  Qt::AlignLeft | Qt::AlignVCenter);
 
-        xsheetFrameLay->addWidget(xsheetAutopanDuringPlaybackCB, 2, 0, 1, 2);
+        xsheetFrameLay->addWidget(xsheetAutopanDuringPlaybackCB, 2, 0, 1, 3);
 
         xsheetFrameLay->addWidget(new QLabel(tr("Cell-dragging Behaviour:")), 3,
                                   0, Qt::AlignRight | Qt::AlignVCenter);
-        xsheetFrameLay->addWidget(m_cellsDragBehaviour, 3, 1);
+        xsheetFrameLay->addWidget(m_cellsDragBehaviour, 3, 1, 1, 2,
+                                  Qt::AlignLeft | Qt::AlignVCenter);
 
         xsheetFrameLay->addWidget(ignoreAlphaonColumn1CB, 4, 0, 1, 2);
         xsheetFrameLay->addWidget(showKeyframesOnCellAreaCB, 5, 0, 1, 2);
@@ -2154,14 +2257,15 @@ PreferencesPopup::PreferencesPopup()
 
         xsheetFrameLay->addWidget(m_showXSheetToolbar, 9, 0, 3, 3);
         xsheetFrameLay->addWidget(showColumnNumbersCB, 12, 0, 1, 2);
+        xsheetFrameLay->addWidget(m_syncLevelRenumberWithXsheet, 13, 0, 1, 2);
+        xsheetFrameLay->addWidget(showCurrentTimelineCB, 14, 0, 1, 2);
       }
       xsheetFrameLay->setColumnStretch(0, 0);
       xsheetFrameLay->setColumnStretch(1, 0);
       xsheetFrameLay->setColumnStretch(2, 1);
-      xsheetFrameLay->setRowStretch(13, 1);
+      xsheetFrameLay->setRowStretch(15, 1);
 
       xsheetBoxFrameLay->addLayout(xsheetFrameLay);
-
       xsheetBoxFrameLay->addStretch(1);
 
       xsheetBoxFrameLay->addWidget(note_xsheet, 0);
@@ -2214,16 +2318,14 @@ PreferencesPopup::PreferencesPopup()
                                Qt::AlignLeft | Qt::AlignVCenter);
       previewLayout->addWidget(fitToFlipbookCB, 4, 0, 1, 3,
                                Qt::AlignLeft | Qt::AlignVCenter);
+      previewLayout->addWidget(openFlipbookAfterCB, 5, 0, 1, 3,
+                               Qt::AlignLeft | Qt::AlignVCenter);
     }
     previewLayout->setColumnStretch(0, 0);
     previewLayout->setColumnStretch(1, 0);
     previewLayout->setColumnStretch(2, 1);
-    previewLayout->setRowStretch(0, 0);
-    previewLayout->setRowStretch(1, 0);
-    previewLayout->setRowStretch(2, 0);
-    previewLayout->setRowStretch(3, 0);
-    previewLayout->setRowStretch(4, 0);
-    previewLayout->setRowStretch(5, 1);
+    for (int i = 0; i <= 5; i++) previewLayout->setRowStretch(i, 0);
+    previewLayout->setRowStretch(6, 1);
     previewBox->setLayout(previewLayout);
     stackedWidget->addWidget(previewBox);
 
@@ -2273,33 +2375,62 @@ PreferencesPopup::PreferencesPopup()
     onionBox->setLayout(onionLay);
     stackedWidget->addWidget(onionBox);
 
-    //--- Transparency Check --------------------------
-    QWidget *tcBox     = new QWidget(this);
-    QGridLayout *tcLay = new QGridLayout();
-    tcLay->setMargin(15);
-    tcLay->setHorizontalSpacing(10);
-    tcLay->setVerticalSpacing(10);
+    //--- Colors --------------------------
+    QWidget *colorBox     = new QWidget(this);
+    QGridLayout *colorLay = new QGridLayout();
+    colorLay->setMargin(15);
+    colorLay->setHorizontalSpacing(10);
+    colorLay->setVerticalSpacing(10);
     {
-      tcLay->addWidget(new QLabel(tr("Ink Color on White Bg:")), 0, 0,
-                       Qt::AlignRight);
-      tcLay->addWidget(m_transpCheckInkColor, 0, 1);
+      colorLay->addWidget(new QLabel(tr("Viewer BG Color"), this), 0, 0,
+                          Qt::AlignRight | Qt::AlignVCenter);
+      colorLay->addWidget(m_viewerBgColorFld, 0, 1);
 
-      tcLay->addWidget(new QLabel(tr("Ink Color on Black Bg:")), 1, 0,
-                       Qt::AlignRight);
-      tcLay->addWidget(m_transpCheckBgColor, 1, 1);
+      colorLay->addWidget(new QLabel(tr("Preview BG Color"), this), 1, 0,
+                          Qt::AlignRight | Qt::AlignVCenter);
+      colorLay->addWidget(m_previewBgColorFld, 1, 1);
 
-      tcLay->addWidget(new QLabel(tr("Paint Color:")), 2, 0, Qt::AlignRight);
-      tcLay->addWidget(m_transpCheckPaintColor, 2, 1);
+      colorLay->addWidget(new QLabel(tr("ChessBoard Color 1"), this), 2, 0,
+                          Qt::AlignRight | Qt::AlignVCenter);
+      colorLay->addWidget(m_chessboardColor1Fld, 2, 1);
+
+      colorLay->addWidget(new QLabel(tr("Chessboard Color 2"), this), 3, 0,
+                          Qt::AlignRight | Qt::AlignVCenter);
+      colorLay->addWidget(m_chessboardColor2Fld, 3, 1);
+
+      QGroupBox *tcBox   = new QGroupBox(tr("Transparency Check"), this);
+      QGridLayout *tcLay = new QGridLayout();
+      tcLay->setMargin(15);
+      tcLay->setHorizontalSpacing(10);
+      tcLay->setVerticalSpacing(10);
+      {
+        tcLay->addWidget(new QLabel(tr("Ink Color on White Bg:")), 0, 0,
+                         Qt::AlignRight);
+        tcLay->addWidget(m_transpCheckInkColor, 0, 1);
+
+        tcLay->addWidget(new QLabel(tr("Ink Color on Black Bg:")), 1, 0,
+                         Qt::AlignRight);
+        tcLay->addWidget(m_transpCheckBgColor, 1, 1);
+
+        tcLay->addWidget(new QLabel(tr("Paint Color:")), 2, 0, Qt::AlignRight);
+        tcLay->addWidget(m_transpCheckPaintColor, 2, 1);
+      }
+      tcLay->setColumnStretch(0, 0);
+      tcLay->setColumnStretch(1, 0);
+      tcLay->setColumnStretch(2, 1);
+      for (int i = 0; i <= 2; i++) tcLay->setRowStretch(i, 0);
+      tcLay->setRowStretch(3, 1);
+      tcBox->setLayout(tcLay);
+
+      colorLay->addWidget(tcBox, 4, 0, 1, 3);
     }
-    tcLay->setColumnStretch(0, 0);
-    tcLay->setColumnStretch(1, 0);
-    tcLay->setColumnStretch(2, 1);
-    tcLay->setRowStretch(0, 0);
-    tcLay->setRowStretch(1, 0);
-    tcLay->setRowStretch(2, 0);
-    tcLay->setRowStretch(3, 1);
-    tcBox->setLayout(tcLay);
-    stackedWidget->addWidget(tcBox);
+    colorLay->setColumnStretch(0, 0);
+    colorLay->setColumnStretch(1, 0);
+    colorLay->setColumnStretch(2, 1);
+    for (int i = 0; i <= 4; i++) colorLay->setRowStretch(i, 0);
+    colorLay->setRowStretch(5, 1);
+    colorBox->setLayout(colorLay);
+    stackedWidget->addWidget(colorBox);
 
     //--- Version Control --------------------------
     QWidget *versionControlBox = new QWidget(this);
@@ -2336,6 +2467,12 @@ PreferencesPopup::PreferencesPopup()
                        SLOT(onRasterOptimizedMemoryChanged(int)));
   ret = ret && connect(m_autoSaveGroup, SIGNAL(toggled(bool)),
                        SLOT(onAutoSaveChanged(bool)));
+  ret = ret && connect(m_pref, SIGNAL(stopAutoSave()), this,
+                       SLOT(onAutoSaveExternallyChanged()));
+  ret = ret && connect(m_pref, SIGNAL(startAutoSave()), this,
+                       SLOT(onAutoSaveExternallyChanged()));
+  ret = ret && connect(m_pref, SIGNAL(autoSavePeriodChanged()), this,
+                       SLOT(onAutoSavePeriodExternallyChanged()));
   ret = ret && connect(m_autoSaveSceneCB, SIGNAL(stateChanged(int)),
                        SLOT(onAutoSaveSceneChanged(int)));
   ret = ret && connect(m_autoSaveOtherFilesCB, SIGNAL(stateChanged(int)),
@@ -2366,6 +2503,9 @@ PreferencesPopup::PreferencesPopup()
                        SLOT(onProjectRootChanged()));
   ret = ret && connect(m_projectRootCustom, SIGNAL(stateChanged(int)),
                        SLOT(onProjectRootChanged()));
+  ret = ret && connect(pathAliasPriority, SIGNAL(currentIndexChanged(int)),
+                       SLOT(onPathAliasPriorityChanged(int)));
+
   //--- Interface ----------------------
   ret = ret &&
         connect(styleSheetType, SIGNAL(currentIndexChanged(const QString &)),
@@ -2383,8 +2523,6 @@ PreferencesPopup::PreferencesPopup()
                        SLOT(onCameraUnitChanged(int)));
   ret = ret && connect(roomChoice, SIGNAL(currentIndexChanged(int)),
                        SLOT(onRoomChoiceChanged(int)));
-  ret = ret && connect(openFlipbookAfterCB, SIGNAL(stateChanged(int)), this,
-                       SLOT(onViewGeneratedMovieChanged(int)));
   ret = ret && connect(m_iconSizeLx, SIGNAL(editingFinished()),
                        SLOT(onIconSizeChanged()));
   ret = ret && connect(m_iconSizeLy, SIGNAL(editingFinished()),
@@ -2415,21 +2553,6 @@ PreferencesPopup::PreferencesPopup()
   ret = ret &&
         connect(showShowFrameNumberWithLettersCB, SIGNAL(stateChanged(int)),
                 this, SLOT(onShowFrameNumberWithLettersChanged(int)));
-  // Viewer BG color
-  ret = ret && connect(m_viewerBgColorFld,
-                       SIGNAL(colorChanged(const TPixel32 &, bool)), this,
-                       SLOT(setViewerBgColor(const TPixel32 &, bool)));
-  // Preview BG color
-  ret = ret && connect(m_previewBgColorFld,
-                       SIGNAL(colorChanged(const TPixel32 &, bool)), this,
-                       SLOT(setPreviewBgColor(const TPixel32 &, bool)));
-  // bg chessboard colors
-  ret = ret && connect(m_chessboardColor1Fld,
-                       SIGNAL(colorChanged(const TPixel32 &, bool)), this,
-                       SLOT(setChessboardColor1(const TPixel32 &, bool)));
-  ret = ret && connect(m_chessboardColor2Fld,
-                       SIGNAL(colorChanged(const TPixel32 &, bool)), this,
-                       SLOT(setChessboardColor2(const TPixel32 &, bool)));
   // Column Icon
   ret = ret &&
         connect(m_columnIconOm, SIGNAL(currentIndexChanged(const QString &)),
@@ -2485,10 +2608,6 @@ PreferencesPopup::PreferencesPopup()
   //--- Drawing ----------------------
   ret = ret && connect(keepOriginalCleanedUpCB, SIGNAL(stateChanged(int)), this,
                        SLOT(onSaveUnpaintedInCleanupChanged(int)));
-  ret = ret && connect(multiLayerStylePickerCB, SIGNAL(stateChanged(int)), this,
-                       SLOT(onMultiLayerStylePickerChanged(int)));
-  ret = ret && connect(useSaveboxToLimitFillingOpCB, SIGNAL(stateChanged(int)),
-                       this, SLOT(onGetFillOnlySavebox(int)));
   ret = ret && connect(m_defScanLevelType,
                        SIGNAL(currentIndexChanged(const QString &)),
                        SLOT(onScanLevelTypeChanged(const QString &)));
@@ -2509,6 +2628,14 @@ PreferencesPopup::PreferencesPopup()
                        SLOT(onDefLevelParameterChanged()));
   ret = ret && connect(m_useNumpadForSwitchingStyles, SIGNAL(clicked(bool)),
                        SLOT(onUseNumpadForSwitchingStylesClicked(bool)));
+  ret = ret && connect(m_keepFillOnVectorSimplifyCB, SIGNAL(stateChanged(int)),
+                       SLOT(onKeepFillOnVectorSimplifyChanged(int)));
+  ret = ret &&
+        connect(m_useHigherDpiOnVectorSimplifyCB, SIGNAL(stateChanged(int)),
+                SLOT(onUseHigherDpiOnVectorSimplifyChanged(int)));
+  ret = ret && connect(m_downArrowInLevelStripCreatesNewFrame,
+                       SIGNAL(stateChanged(int)),
+                       SLOT(onDownArrowInLevelStripCreatesNewFrame(int)));
   ret = ret && connect(m_newLevelToCameraSizeCB, SIGNAL(clicked(bool)),
                        SLOT(onNewLevelToCameraSizeChanged(bool)));
 
@@ -2517,6 +2644,10 @@ PreferencesPopup::PreferencesPopup()
   ret = ret && connect(m_dropdownShortcutsCycleOptionsCB,
                        SIGNAL(currentIndexChanged(int)),
                        SLOT(onDropdownShortcutsCycleOptionsChanged(int)));
+  ret = ret && connect(multiLayerStylePickerCB, SIGNAL(stateChanged(int)), this,
+                       SLOT(onMultiLayerStylePickerChanged(int)));
+  ret = ret && connect(useSaveboxToLimitFillingOpCB, SIGNAL(stateChanged(int)),
+                       this, SLOT(onGetFillOnlySavebox(int)));
 
   //--- Xsheet ----------------------
   ret = ret && connect(xsheetAutopanDuringPlaybackCB, SIGNAL(stateChanged(int)),
@@ -2545,6 +2676,10 @@ PreferencesPopup::PreferencesPopup()
 
   ret = ret && connect(showColumnNumbersCB, SIGNAL(stateChanged(int)), this,
                        SLOT(onShowColumnNumbersChanged(int)));
+
+  ret = ret && connect(m_syncLevelRenumberWithXsheet, SIGNAL(stateChanged(int)),
+                       this, SLOT(onSyncLevelRenumberWithXsheetChanged(int)));
+
   ret = ret && connect(xsheetLayoutOptions,
                        SIGNAL(currentIndexChanged(const QString &)), this,
                        SLOT(onXsheetLayoutChanged(const QString &)));
@@ -2567,6 +2702,8 @@ PreferencesPopup::PreferencesPopup()
                        SLOT(onPreviewAlwaysOpenNewFlip(int)));
   ret = ret && connect(fitToFlipbookCB, SIGNAL(stateChanged(int)), this,
                        SLOT(onFitToFlipbook(int)));
+  ret = ret && connect(openFlipbookAfterCB, SIGNAL(stateChanged(int)), this,
+                       SLOT(onViewGeneratedMovieChanged(int)));
 
   //--- Onion Skin ----------------------
   ret = ret &&
@@ -2585,7 +2722,25 @@ PreferencesPopup::PreferencesPopup()
                        SLOT(onOnionPaperThicknessChanged()));
   ret = ret && connect(m_guidedDrawingStyle, SIGNAL(currentIndexChanged(int)),
                        SLOT(onGuidedDrawingStyleChanged(int)));
-  //--- Transparency Check ----------------------
+  ret = ret && connect(showCurrentTimelineCB, SIGNAL(stateChanged(int)), this,
+                       SLOT(onShowCurrentTimelineChanged(int)));
+
+  //--- Colors ----------------------
+  // Viewer BG color
+  ret = ret && connect(m_viewerBgColorFld,
+                       SIGNAL(colorChanged(const TPixel32 &, bool)), this,
+                       SLOT(setViewerBgColor(const TPixel32 &, bool)));
+  // Preview BG color
+  ret = ret && connect(m_previewBgColorFld,
+                       SIGNAL(colorChanged(const TPixel32 &, bool)), this,
+                       SLOT(setPreviewBgColor(const TPixel32 &, bool)));
+  // bg chessboard colors
+  ret = ret && connect(m_chessboardColor1Fld,
+                       SIGNAL(colorChanged(const TPixel32 &, bool)), this,
+                       SLOT(setChessboardColor1(const TPixel32 &, bool)));
+  ret = ret && connect(m_chessboardColor2Fld,
+                       SIGNAL(colorChanged(const TPixel32 &, bool)), this,
+                       SLOT(setChessboardColor2(const TPixel32 &, bool)));
   ret = ret && connect(m_transpCheckBgColor,
                        SIGNAL(colorChanged(const TPixel32 &, bool)),
                        SLOT(onTranspCheckDataChanged(const TPixel32 &, bool)));

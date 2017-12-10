@@ -86,6 +86,7 @@ TEnv::IntVar DockingCheckToggleAction("DockingCheckToggleAction", 0);
 TEnv::IntVar ShiftTraceToggleAction("ShiftTraceToggleAction", 0);
 TEnv::IntVar EditShiftToggleAction("EditShiftToggleAction", 0);
 TEnv::IntVar NoShiftToggleAction("NoShiftToggleAction", 0);
+TEnv::IntVar TouchGestureControl("TouchGestureControl", 0);
 
 //=============================================================================
 namespace {
@@ -1096,12 +1097,7 @@ void MainWindow::onAbout() {
 
 void MainWindow::autofillToggle() {
   TPaletteHandle *h = TApp::instance()->getCurrentPalette();
-  int index         = h->getStyleIndex();
-  if (index > 0) {
-    TColorStyle *s = h->getPalette()->getStyle(index);
-    s->setFlags(s->getFlags() == 0 ? 1 : 0);
-    h->notifyColorStyleChanged();
-  }
+  h->toggleAutopaint();
 }
 
 void MainWindow::resetRoomsLayout() {
@@ -1299,6 +1295,8 @@ void MainWindow::onMenuCheckboxChanged() {
     EditShiftToggleAction = isChecked;
   else if (cm->getAction(MI_NoShift) == action)
     NoShiftToggleAction = isChecked;
+  else if (cm->getAction(MI_TouchGestureControl) == action)
+    TouchGestureControl = isChecked;
 }
 
 //-----------------------------------------------------------------------------
@@ -1647,6 +1645,7 @@ void MainWindow::defineActions() {
   createMenuFileAction(MI_Render, tr("&Render"), "Ctrl+Shift+R");
   createMenuFileAction(MI_FastRender, tr("&Fast Render to MP4"), "Alt+R");
   createMenuFileAction(MI_Preview, tr("&Preview"), "Ctrl+R");
+  createMenuFileAction(MI_SoundTrack, tr("&Export Soundtrack"), "");
   createRightClickMenuAction(MI_SavePreviewedFrames,
                              tr("&Save Previewed Frames"), "");
   createRightClickMenuAction(MI_RegeneratePreview, tr("&Regenerate Preview"),
@@ -1707,6 +1706,10 @@ void MainWindow::defineActions() {
   createMenuEditAction(MI_EnterGroup, tr("&Enter Group"), "");
   createMenuEditAction(MI_ExitGroup, tr("&Exit Group"), "");
   createMenuEditAction(MI_RemoveEndpoints, tr("&Remove Vector Overflow"), "");
+
+  createToggle(MI_TouchGestureControl, tr("&Touch Gesture Control"), "",
+               TouchGestureControl ? 1 : 0, MenuEditCommandType)
+      ->setEnabled(true);
 
   createMenuScanCleanupAction(MI_DefineScanner, tr("&Define Scanner..."), "");
   createMenuScanCleanupAction(MI_ScanSettings, tr("&Scan Settings..."), "");
@@ -1816,6 +1819,10 @@ void MainWindow::defineActions() {
                          "");
   createMenuXsheetAction(MI_RemoveGlobalKeyframe, tr("Remove Multiple Keys"),
                          "");
+  createMenuXsheetAction(MI_NewNoteLevel, tr("New Note Level"), "");
+  createMenuXsheetAction(MI_RemoveEmptyColumns, tr("Remove Empty Columns"), "");
+  createMenuXsheetAction(MI_LipSyncPopup, tr("&Apply Lip Sync Data to Column"),
+                         "Alt+L");
   createRightClickMenuAction(MI_ToggleXSheetToolbar,
                              tr("Toggle XSheet Toolbar"), "");
   createMenuCellsAction(MI_Reverse, tr("&Reverse"), "");
@@ -2015,12 +2022,16 @@ void MainWindow::defineActions() {
                           "Ctrl+`");
   createMenuWindowsAction(MI_About, tr("&About OpenToonz..."), "");
   createMenuWindowsAction(MI_StartupPopup, tr("&Startup Popup..."), "Alt+S");
+
   createRightClickMenuAction(MI_BlendColors, tr("&Blend colors"), "");
 
   createToggle(MI_OnionSkin, tr("Onion Skin Toggle"), "/", false,
                RightClickMenuCommandType);
   createToggle(MI_ZeroThick, tr("Zero Thick Lines"), "Shift+/", false,
                RightClickMenuCommandType);
+
+  createRightClickMenuAction(MI_ToggleCurrentTimeIndicator,
+                             tr("Toggle Current Time Indicator"), "");
 
   // createRightClickMenuAction(MI_LoadSubSceneFile,     tr("Load As
   // Sub-xsheet"),   "");
@@ -2037,6 +2048,10 @@ void MainWindow::defineActions() {
   // createRightClickMenuAction(MI_PremultiplyFile,      tr("Premultiply"),
   // "");
   createMenuLevelAction(MI_ConvertToVectors, tr("Convert to Vectors..."), "");
+  createMenuLevelAction(MI_ConvertToToonzRaster, tr("Vectors to Toonz Raster"),
+                        "");
+  createMenuLevelAction(MI_ConvertVectorToVector,
+                        tr("Replace Vectors with Simplified Vectors"), "");
   createMenuLevelAction(MI_Tracking, tr("Tracking..."), "");
   createRightClickMenuAction(MI_RemoveLevel, tr("Remove Level"), "");
   createRightClickMenuAction(MI_AddToBatchRenderList, tr("Add As Render Task"),
@@ -2103,14 +2118,14 @@ void MainWindow::defineActions() {
   createRightClickMenuAction(MI_DeactivateUpperColumns,
                              tr("Hide Upper Columns"), "");
 
-  createToolAction(T_Edit, "edit", tr("Edit Tool"), "E");
+  createToolAction(T_Edit, "edit", tr("Animate Tool"), "A");
   createToolAction(T_Selection, "selection", tr("Selection Tool"), "S");
   createToolAction(T_Brush, "brush", tr("Brush Tool"), "B");
   createToolAction(T_Geometric, "geometric", tr("Geometric Tool"), "G");
   createToolAction(T_Type, "type", tr("Type Tool"), "Y");
   createToolAction(T_Fill, "fill", tr("Fill Tool"), "F");
   createToolAction(T_PaintBrush, "paintbrush", tr("Paint Brush Tool"), "");
-  createToolAction(T_Eraser, "eraser", tr("Eraser Tool"), "A");
+  createToolAction(T_Eraser, "eraser", tr("Eraser Tool"), "E");
   createToolAction(T_Tape, "tape", tr("Tape Tool"), "T");
   createToolAction(T_StylePicker, "stylepicker", tr("Style Picker Tool"), "K");
   createToolAction(T_RGBPicker, "RGBpicker", tr("RGB Picker Tool"), "R");
@@ -2137,6 +2152,8 @@ void MainWindow::defineActions() {
   createViewerAction(V_ZoomReset, tr("Reset View"), "Alt+0");
   createViewerAction(V_ZoomFit, tr("Fit to Window"), "Alt+9");
   createViewerAction(V_ActualPixelSize, tr("Actual Pixel Size"), "N");
+  createViewerAction(V_FlipX, tr("Flip Viewer Horiontally"), "");
+  createViewerAction(V_FlipY, tr("Flip Viewer Vertically"), "");
   createViewerAction(V_ShowHideFullScreen, tr("Show//Hide Full Screen"),
                      "Alt+F");
   CommandManager::instance()->setToggleTexts(V_ShowHideFullScreen,
@@ -2240,9 +2257,13 @@ void MainWindow::defineActions() {
   createToolOptionsAction("A_ToolOption_PickScreen", tr("Pick Screen"), "");
   createToolOptionsAction("A_ToolOption_Meshify", tr("Create Mesh"), "");
 
+  createToolOptionsAction("A_ToolOption_AutopaintLines",
+                          tr("Fill Tool - Autopaint Lines"), "");
+
   /*-- FillAreas, FillLinesにキー1つで切り替えるためのコマンド --*/
   createAction(MI_FillAreas, tr("Fill Tool - Areas"), "", ToolCommandType);
   createAction(MI_FillLines, tr("Fill Tool - Lines"), "", ToolCommandType);
+
   /*-- Style picker Area, Style picker Lineににキー1つで切り替えるためのコマンド
    * --*/
   createAction(MI_PickStyleAreas, tr("Style Picker Tool - Areas"), "",

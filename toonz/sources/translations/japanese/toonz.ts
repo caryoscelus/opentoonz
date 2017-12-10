@@ -90,8 +90,7 @@
     <name>AntialiasPopup</name>
     <message>
         <source>Apply Antialias</source>
-        <translation>アンチエイリアスを適用
-</translation>
+        <translation>アンチエイリアスを適用</translation>
     </message>
     <message>
         <source>Threshold:</source>
@@ -862,7 +861,7 @@ What do you want to do?</source>
     </message>
     <message>
         <source>Cleanup Settings: </source>
-        <translation> </translation>
+        <translation>トレース設定: </translation>
     </message>
     <message>
         <source>Cleanup Settings</source>
@@ -1054,6 +1053,66 @@ What do you want to do?</source>
     <message>
         <source>Level: </source>
         <translation>レベル：</translation>
+    </message>
+    <message>
+        <source> (Flipped)</source>
+        <translation> （反転表示）</translation>
+    </message>
+</context>
+<context>
+    <name>CommandBar</name>
+    <message>
+        <source>Customize Command Bar</source>
+        <translation>コマンドバーをカスタマイズ</translation>
+    </message>
+</context>
+<context>
+    <name>CommandBarListTree</name>
+    <message>
+        <source>----Separator----</source>
+        <translation>----セパレータ----</translation>
+    </message>
+</context>
+<context>
+    <name>CommandBarPopup</name>
+    <message>
+        <source>XSheet Toolbar</source>
+        <translation>タイムシートツールバー</translation>
+    </message>
+    <message>
+        <source>Customize XSheet Toolbar</source>
+        <translation>タイムシートツールバーをカスタマイズ</translation>
+    </message>
+    <message>
+        <source>Command Bar</source>
+        <translation>コマンドバー</translation>
+    </message>
+    <message>
+        <source>Customize Command Bar</source>
+        <translation>コマンドバーをカスタマイズ</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>キャンセル</translation>
+    </message>
+    <message>
+        <source>Toolbar Items</source>
+        <translation>ツールバーの項目</translation>
+    </message>
+    <message>
+        <source>Duplicated commands will be ignored. Only the last one will appear in the menu bar.</source>
+        <translation>重複したコマンドは無視され、最後に追加されたものだけがツールバーに表示されます。</translation>
+    </message>
+</context>
+<context>
+    <name>CommandBarTree</name>
+    <message>
+        <source>Remove &quot;%1&quot;</source>
+        <translation>&quot;%1&quot;を削除</translation>
     </message>
 </context>
 <context>
@@ -1504,11 +1563,11 @@ contain the dpi information, then the current camera dpi will be used.
     </message>
     <message>
         <source>There was an error copying %1 to %2</source>
-        <translation>%2 に　%1 をコピーする時、エラーが発生しました。</translation>
+        <translation>%2 に　%1 をコピーする時、エラーが発生しました</translation>
     </message>
     <message>
         <source>The local path does not exist:</source>
-        <translation>ローカルパスは存在しません。</translation>
+        <translation>ローカルパスは存在しません：</translation>
     </message>
 </context>
 <context>
@@ -1966,7 +2025,7 @@ contain the dpi information, then the current camera dpi will be used.
     </message>
     <message>
         <source>The input folder path was invalid.</source>
-        <translation>入力されたフォルダパスは無効です</translation>
+        <translation>入力されたフォルダパスは無効です。</translation>
     </message>
 </context>
 <context>
@@ -2391,7 +2450,7 @@ Do you want to overwrite it?</source>
     </message>
     <message>
         <source>No level name specified: please choose a valid level name</source>
-        <translation>レベル名は指定されていません。有効なレベル名を指定して下さい。</translation>
+        <translation>レベル名は指定されていません。有効なレベル名を指定して下さい</translation>
     </message>
     <message>
         <source>Invalid frame range</source>
@@ -2413,7 +2472,7 @@ Do you want to create it?</source>
     </message>
     <message>
         <source>Unable to create</source>
-        <translation>作成できません。</translation>
+        <translation>作成できません </translation>
     </message>
     <message>
         <source>Invalid increment value</source>
@@ -2654,6 +2713,101 @@ Do you want to create it?</source>
     <message>
         <source>Apply</source>
         <translation></translation>
+    </message>
+</context>
+<context>
+    <name>LipSyncPopup</name>
+    <message>
+        <source>Apply Lip Sync Data</source>
+        <translation>リップシンクデータの適用</translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation>適用</translation>
+    </message>
+    <message>
+        <source>A I Drawing</source>
+        <translation>A I の作画</translation>
+    </message>
+    <message>
+        <source>O Drawing</source>
+        <translation>O の作画</translation>
+    </message>
+    <message>
+        <source>E Drawing</source>
+        <translation>E の作画</translation>
+    </message>
+    <message>
+        <source>U Drawing</source>
+        <translation>U の作画</translation>
+    </message>
+    <message>
+        <source>L Drawing</source>
+        <translation>L の作画</translation>
+    </message>
+    <message>
+        <source>W Q Drawing</source>
+        <translation>W Q の作画</translation>
+    </message>
+    <message>
+        <source>M B P Drawing</source>
+        <translation>M B P の作画</translation>
+    </message>
+    <message>
+        <source>F V Drawing</source>
+        <translation>F V の作画</translation>
+    </message>
+    <message>
+        <source>Rest Drawing</source>
+        <translation>閉じ口 の作画</translation>
+    </message>
+    <message>
+        <source>C D G K N R S Th Y Z</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Extend Rest Drawing to End Marker</source>
+        <translation>閉じ口の作画をエンドマーカーまで延長する</translation>
+    </message>
+    <message>
+        <source>Previous Drawing</source>
+        <translation>前の画像</translation>
+    </message>
+    <message>
+        <source>Next Drawing</source>
+        <translation>次の画像</translation>
+    </message>
+    <message>
+        <source>Insert at Frame: </source>
+        <translation>挿入するフレーム: </translation>
+    </message>
+    <message>
+        <source>Lip Sync Data File: </source>
+        <translation>リップシンクデータ: </translation>
+    </message>
+    <message>
+        <source>Thumbnails are not available for sub-Xsheets.
+Please use the frame numbers for reference.</source>
+        <translation>サブシートではサムネイル表示が使用できません。
+動画番号を参考にして設定を行ってください。</translation>
+    </message>
+    <message>
+        <source>Unable to apply lip sync data to this column type</source>
+        <translation>この列の形式には、リップシンクデータを適用することができません</translation>
+    </message>
+    <message>
+        <source>SubXSheet Frame </source>
+        <translation>サブシートのフレーム</translation>
+    </message>
+    <message>
+        <source>Unable to open the file: 
+</source>
+        <translation>ファイルを開けません: 
+</translation>
+    </message>
+    <message>
+        <source>Invalid data file.</source>
+        <translation>無効なデータファイルです。</translation>
     </message>
 </context>
 <context>
@@ -3028,11 +3182,11 @@ Do you want to create it?</source>
     </message>
     <message>
         <source>&amp;Save Palette As...</source>
-        <translation>パレットを保存 (&amp;S)...</translation>
+        <translation>パレットを別名で保存 (&amp;S)...</translation>
     </message>
     <message>
         <source>&amp;Save Palette</source>
-        <translation>.</translation>
+        <translation>パレットを保存 (&amp;S)</translation>
     </message>
     <message>
         <source>&amp;Load Color Model...</source>
@@ -3260,7 +3414,7 @@ Do you want to create it?</source>
     </message>
     <message>
         <source>&amp;Revert to Last Saved Version</source>
-        <translation>最後に保存したバージョンに戻す (&amp;R)</translation>
+        <translation type="vanished">最後に保存したバージョンに戻す (&amp;R)</translation>
     </message>
     <message>
         <source>&amp;Expose in Xsheet</source>
@@ -3448,19 +3602,19 @@ Do you want to create it?</source>
     </message>
     <message>
         <source>Drawing Substitution Forward</source>
-        <translation></translation>
+        <translation>動画番号を１つ進める</translation>
     </message>
     <message>
         <source>Drawing Substitution Backward</source>
-        <translation></translation>
+        <translation>動画番号を１つ戻す</translation>
     </message>
     <message>
         <source>Similar Drawing Substitution Forward</source>
-        <translation></translation>
+        <translation>連続コマの動画番号を１つ進める</translation>
     </message>
     <message>
         <source>Similar Drawing Substitution Backward</source>
-        <translation></translation>
+        <translation>連続コマの動画番号を１つ戻す</translation>
     </message>
     <message>
         <source>&amp;Set Key</source>
@@ -3852,7 +4006,7 @@ Do you want to create it?</source>
     </message>
     <message>
         <source>Edit Tool</source>
-        <translation>編集ツール</translation>
+        <translation type="vanished">編集ツール</translation>
     </message>
     <message>
         <source>Selection Tool</source>
@@ -4620,7 +4774,7 @@ Do you want to create it?</source>
     </message>
     <message>
         <source>&amp;ComboViewer</source>
-        <translation>メインビューア (&amp;C)</translation>
+        <translation>メインビューア（コンボ） (&amp;C)</translation>
     </message>
     <message>
         <source>&amp;History</source>
@@ -4741,6 +4895,66 @@ Do you want to create it?</source>
     <message>
         <source>Reframe with Empty Inbetweens...</source>
         <translation>空コマを入れてリフレーム...</translation>
+    </message>
+    <message>
+        <source>&amp;Toggle Edit In Place</source>
+        <translation>親シートの内容をビューアに表示 (&amp;T)</translation>
+    </message>
+    <message>
+        <source>&amp;Reload</source>
+        <translation>再読み込み (&amp;R)</translation>
+    </message>
+    <message>
+        <source>New Note Level</source>
+        <translation>新規ノートレベル</translation>
+    </message>
+    <message>
+        <source>&amp;Apply Lip Sync Data to Column</source>
+        <translation>列にリップシンクデータを適用する (&amp;A)</translation>
+    </message>
+    <message>
+        <source>&amp;Paste Numbers</source>
+        <translation>動画番号を貼り付け (&amp;P)</translation>
+    </message>
+    <message>
+        <source>Toggle Current Time Indicator</source>
+        <translation>フレームインジケータの表示/非表示</translation>
+    </message>
+    <message>
+        <source>Vectors to Toonz Raster</source>
+        <translation>ベクターからToonzラスターに変換</translation>
+    </message>
+    <message>
+        <source>Replace Vectors with Simplified Vectors</source>
+        <translation>ベクターを整理したベクターに変換</translation>
+    </message>
+    <message>
+        <source>Flip Viewer Horiontally</source>
+        <translation>ビューアを水平方向に反転</translation>
+    </message>
+    <message>
+        <source>Flip Viewer Vertically</source>
+        <translation>ビューアを垂直方向に反転</translation>
+    </message>
+    <message>
+        <source>Fill Tool - Autopaint Lines</source>
+        <translation>塗りつぶしツール - 含み塗り</translation>
+    </message>
+    <message>
+        <source>&amp;Export Soundtrack</source>
+        <translation>サウンドトラックを書き出し (&amp;E)</translation>
+    </message>
+    <message>
+        <source>&amp;Touch Gesture Control</source>
+        <translation>タッチ操作 (&amp;T)</translation>
+    </message>
+    <message>
+        <source>Remove Empty Columns</source>
+        <translation>空の列を消去する</translation>
+    </message>
+    <message>
+        <source>Animate Tool</source>
+        <translation>編集ツール</translation>
     </message>
 </context>
 <context>
@@ -5051,7 +5265,7 @@ What do you want to do?</source>
     </message>
     <message>
         <source>Do stereoscopy</source>
-        <translation>: </translation>
+        <translation>立体視レンダリング</translation>
     </message>
     <message>
         <source>Standard</source>
@@ -5815,8 +6029,18 @@ WARNING : Image size mismatch. The saved image size is %1 x %2.</source>
     <message>
         <source>Save the current scene in the subfolder.
           Set the output folder path to the subfolder as well.</source>
-        <translation>シーンをカットフォルダ内に保存します。
+        <translation type="vanished">シーンをカットフォルダ内に保存します。
 出力設定の保存先のパスもカットフォルダ内に変更します。</translation>
+    </message>
+    <message>
+        <source>Create the Destination Subfolder to Save</source>
+        <translation>カットフォルダの作成</translation>
+    </message>
+    <message>
+        <source>Save the current scene in the subfolder.
+Set the output folder path to the subfolder as well.</source>
+        <translation>カットフォルダ内にシーンファイルを保存します。同時に、
+出力設定の保存先をカットフォルダのパスに設定します。</translation>
     </message>
 </context>
 <context>
@@ -5942,7 +6166,7 @@ WARNING : Image size mismatch. The saved image size is %1 x %2.</source>
     </message>
     <message>
         <source>Style:</source>
-        <translation>スタイル：</translation>
+        <translation type="vanished">スタイル：</translation>
     </message>
     <message>
         <source>Open Flipbook after Rendering</source>
@@ -6225,11 +6449,6 @@ WARNING : Image size mismatch. The saved image size is %1 x %2.</source>
         <translation>太さ0の線を表示</translation>
     </message>
     <message>
-        <source>Antialiased region boundaries</source>
-        <translatorcomment>元訳：アンチエイリアス範囲の境界線</translatorcomment>
-        <translation></translation>
-    </message>
-    <message>
         <source>Next/Previous Step Frames:</source>
         <translation>次の/前のステップのフレーム</translation>
     </message>
@@ -6267,7 +6486,7 @@ WARNING : Image size mismatch. The saved image size is %1 x %2.</source>
     </message>
     <message>
         <source>Show Raster Images Darken Blended in Camstand View</source>
-        <translation>カメラスタンド表示時、ラスター画像を「比較暗」合成して表示する</translation>
+        <translation type="vanished">カメラスタンド表示時、ラスター画像を「比較暗」合成して表示する</translation>
     </message>
     <message>
         <source>Show &quot;ABC&quot; Appendix to the Frame Number in Xsheet Cell</source>
@@ -6499,19 +6718,19 @@ WARNING : Image size mismatch. The saved image size is %1 x %2.</source>
     </message>
     <message>
         <source>OpenToonz can use FFmpeg for additional file formats.</source>
-        <translation>OpenToonzは、FFmpegを用いて入出力可能なファイル形式を追加することができます。</translation>
+        <translation type="vanished">OpenToonzは、FFmpegを用いて入出力可能なファイル形式を追加することができます。</translation>
     </message>
     <message>
         <source>FFmpeg is not bundled with OpenToonz</source>
-        <translation>FFmpegはOpenToonzパッケージには含まれていません</translation>
+        <translation type="vanished">FFmpegはOpenToonzパッケージには含まれていません</translation>
     </message>
     <message>
         <source>NOTE: This is an experimental feature.</source>
-        <translation>注意：本機能は試験的に導入しています。</translation>
+        <translation type="vanished">注意：本機能は試験的に導入しています。</translation>
     </message>
     <message>
         <source>Please SAVE YOUR WORK before exporting in MP4, WEBM, or GIF format.</source>
-        <translation>MP4/WEBM/GIF形式で出力する前に、データのバックアップを保存しておくことをお勧めします。</translation>
+        <translation type="vanished">MP4/WEBM/GIF形式で出力する前に、データのバックアップを保存しておくことをお勧めします。</translation>
     </message>
     <message>
         <source>Please provide the path where FFmpeg is located on your computer.</source>
@@ -6585,7 +6804,7 @@ Is it OK to release these shortcuts?</source>
     </message>
     <message>
         <source>Expand Function Editor Header to Match XSheet Toolbar Height (Requires Restart)</source>
-        <translation>パラメータエディタのヘッダの余白を、タイムシートツールバーに揃えて調整する (再起動が必要です)</translation>
+        <translation type="vanished">パラメータエディタのヘッダの余白を、タイムシートツールバーに揃えて調整する (再起動が必要です)</translation>
     </message>
     <message>
         <source>Show Column Numbers in Column Headers</source>
@@ -6657,7 +6876,7 @@ Is it OK to release these shortcuts?</source>
     </message>
     <message>
         <source>Font Weight *:</source>
-        <translation>文字の太さ *：</translation>
+        <translation type="vanished">文字の太さ *：</translation>
     </message>
     <message>
         <source>Arrow Markers</source>
@@ -6670,6 +6889,112 @@ Is it OK to release these shortcuts?</source>
     <message>
         <source>Vector Guided Style:</source>
         <translation>ベクターレベルの描き順のガイド：</translation>
+    </message>
+    <message>
+        <source>Layout Preference*:</source>
+        <translation type="vanished">列ヘッダのレイアウト*：</translation>
+    </message>
+    <message>
+        <source>Keep fill when using &quot;Replace Vectors&quot; command</source>
+        <translation>「ベクターを整理したベクターに変換」コマンド使用時、塗りを保持する</translation>
+    </message>
+    <message>
+        <source>Use higher DPI for calculations - Slower but more accurate</source>
+        <translation>高解像度モード : 遅いですが、より正確に計算します</translation>
+    </message>
+    <message>
+        <source>Tools</source>
+        <translation>ツール</translation>
+    </message>
+    <message>
+        <source>Sync Level Strip Drawing Number Changes with the Xsheet</source>
+        <translation>レベルビューア上の動画番号の変更を、タイムシートに同期する</translation>
+    </message>
+    <message>
+        <source>Show Current Time Indicator (Timeline Mode only)</source>
+        <translation>フレームインジケータを表示する （タイムライン表示のみ）</translation>
+    </message>
+    <message>
+        <source>Project Folder Aliases (+drawings, +scenes, etc.)</source>
+        <translation>プロジェクトフォルダのエイリアス (+drawings、+scenes等)</translation>
+    </message>
+    <message>
+        <source>Scene Folder Alias ($scenefolder)</source>
+        <translation>シーンフォルダのエイリアス ($scenefolder)</translation>
+    </message>
+    <message>
+        <source>Use Project Folder Aliases Only</source>
+        <translation>プロジェクトフォルダのエイリアスのみ使用する</translation>
+    </message>
+    <message>
+        <source>This option defines which alias to be used
+if both are possible on coding file path.</source>
+        <translation>このオプションは、ファイルパスをエイリアスで置き換えるとき、
+どちらのエイリアスを優先するかを設定します。</translation>
+    </message>
+    <message>
+        <source>Open the dropdown to display all options</source>
+        <translation>コンボボックスを展開して全てのオプションを表示する</translation>
+    </message>
+    <message>
+        <source>Cycle through the available options</source>
+        <translation>オプションを順番に切り替える</translation>
+    </message>
+    <message>
+        <source>Path Alias Priority:</source>
+        <translation>ファイルパスに用いるエイリアスの優先順:</translation>
+    </message>
+    <message>
+        <source>Replace Vectors with Simplified Vectors Command</source>
+        <translation>「ベクターを整理したベクターに変換」コマンド</translation>
+    </message>
+    <message>
+        <source>Dropdown Shortcuts:</source>
+        <translation>コンボボックス表示のオプションにショートカットを用いたとき:</translation>
+    </message>
+    <message>
+        <source>Show Raster Images Darken Blended</source>
+        <translation>ラスター画像を「比較暗」合成して表示する</translation>
+    </message>
+    <message>
+        <source>Antialiased Region Boundaries</source>
+        <translation>アンチエイリアス範囲の境界線</translation>
+    </message>
+    <message>
+        <source>Down Arrow at End of Level Strip Creates a New Frame</source>
+        <translation>レベルビューアの最後のコマで下矢印キーを押すと、新規コマを作成する</translation>
+    </message>
+    <message>
+        <source>Expand Function Editor Header to Match Xsheet Toolbar Height*</source>
+        <translation>パラメータエディタのヘッダの余白を、タイムシートツールバーに揃えて調整する *</translation>
+    </message>
+    <message>
+        <source>Colors</source>
+        <translation>色</translation>
+    </message>
+    <message>
+        <source>Theme:</source>
+        <translation>テーマ：</translation>
+    </message>
+    <message>
+        <source>Weight *:</source>
+        <translation>文字の太さ *：</translation>
+    </message>
+    <message>
+        <source>OpenToonz can use FFmpeg for additional file formats.
+</source>
+        <translation>OpenToonzは、FFmpegを用いて入出力可能なファイル形式を追加することができます。
+</translation>
+    </message>
+    <message>
+        <source>FFmpeg is not bundled with OpenToonz.
+</source>
+        <translation>FFmpegはOpenToonzパッケージには含まれていません。
+</translation>
+    </message>
+    <message>
+        <source>Column Header Layout*:</source>
+        <translation>列のヘッダのレイアウト*：</translation>
     </message>
 </context>
 <context>
@@ -7634,7 +7959,7 @@ Some levels have not been loaded because their version is not supported</source>
     </message>
     <message>
         <source>Only vector levels can be merged to a vector level.</source>
-        <translation>ベクターレベルはベクﾀｰレベルにのみ結合できます。</translation>
+        <translation>ベクターレベルはベクターレベルにのみ結合できます。</translation>
     </message>
     <message>
         <source>It is possible to merge only Toonz vector levels or standard raster levels.</source>
@@ -8386,7 +8711,7 @@ Are you sure?</source>
     </message>
     <message>
         <source>Auto Input Cell Numbers : %1</source>
-        <translation>セルの自動入力：</translation>
+        <translation>セルの自動入力：%1</translation>
     </message>
     <message>
         <source>Insert</source>
@@ -8407,6 +8732,86 @@ Are you sure?</source>
     <message>
         <source>Fx Schematic</source>
         <translation>エフェクトスキマティック</translation>
+    </message>
+    <message>
+        <source>Cannot Read XML File</source>
+        <translation>XMLファイルを読み込めません</translation>
+    </message>
+    <message>
+        <source>New Note Level</source>
+        <translation>新規ノートレベル</translation>
+    </message>
+    <message>
+        <source>The following level(s) use path with $scenefolder alias.
+
+</source>
+        <translation>以下のレベルには、ファイルパスに $scenepath エイリアスが含まれています。
+
+</translation>
+    </message>
+    <message>
+        <source>
+They will not be opened properly when you load the scene next time.
+What do you want to do?</source>
+        <translation>
+これらは、次回シーンを開いた時に正しく読み込まれなくなります。
+どうしますか？</translation>
+    </message>
+    <message>
+        <source>Copy the levels to correspondent paths</source>
+        <translation>レベルを対応するパスに複製する</translation>
+    </message>
+    <message>
+        <source>Decode all $scenefolder aliases</source>
+        <translation>$scenefolder を通常のパスに置き換える</translation>
+    </message>
+    <message>
+        <source>Save the scene only</source>
+        <translation>シーンのみ保存する</translation>
+    </message>
+    <message>
+        <source>Overwrite for All</source>
+        <translation>全て上書き</translation>
+    </message>
+    <message>
+        <source>Don&apos;t Overwrite for All</source>
+        <translation>全て上書きしない</translation>
+    </message>
+    <message>
+        <source>Failed to overwrite %1</source>
+        <translation>%1 の上書きに失敗しました</translation>
+    </message>
+    <message>
+        <source>Apply Lip Sync Data</source>
+        <translation>リップシンクデータの適用</translation>
+    </message>
+    <message>
+        <source>Paste Numbers</source>
+        <translation>動画番号を貼り付け</translation>
+    </message>
+    <message>
+        <source>It is not possible to paste the cells: Some column is locked or column type is not match.</source>
+        <translation>コマの貼り付けができません。列がロックされているか、列の形式が異なっています。</translation>
+    </message>
+    <message>
+        <source>This command only works on vector cells.</source>
+        <translation>このコマンドはベクターレベルのコマにのみ使用できます。</translation>
+    </message>
+    <message>
+        <source>Please select only one column for this command.</source>
+        <translation>このコマンドは１つの列だけ選択して使用して下さい。</translation>
+    </message>
+    <message>
+        <source>All selected cells must belong to the same level.</source>
+        <translation>全ての選択コマには同じレベルが入っていなくてはなりません。</translation>
+    </message>
+    <message>
+        <source>Simplify Vectors : Level %1</source>
+        <translation>整理したベクターに変換 ： レベル %1</translation>
+    </message>
+    <message>
+        <source>Change Text at Column %1  Frame %2</source>
+        <translation>ノートを編集 : 列 %1  フレーム %2</translation>
     </message>
 </context>
 <context>
@@ -9784,6 +10189,10 @@ Please commit or revert changes first.</source>
         <source>Field Guide</source>
         <translation>フィールドガイド</translation>
     </message>
+    <message>
+        <source> (Flipped)</source>
+        <translation> (反転表示)</translation>
+    </message>
 </context>
 <context>
     <name>ShortcutPopup</name>
@@ -10238,6 +10647,14 @@ Possibly the preset file has been corrupted</source>
     <message>
         <source>The height must be greater than zero.</source>
         <translation>高さは1以上でなくてはいけません。</translation>
+    </message>
+    <message>
+        <source>Automatically Save Every </source>
+        <translation>自動保存を行う : </translation>
+    </message>
+    <message>
+        <source>Minutes</source>
+        <translation>分間隔</translation>
     </message>
 </context>
 <context>
@@ -10903,7 +11320,27 @@ Please refer to the user guide for details.</source>
     </message>
     <message>
         <source>Replace</source>
-        <translation>置き換える</translation>
+        <translation type="vanished">置き換える</translation>
+    </message>
+    <message>
+        <source>Edit Cell Numbers</source>
+        <translation>コマの入力</translation>
+    </message>
+    <message>
+        <source>Replace Level</source>
+        <translation>レベルを置き換え</translation>
+    </message>
+    <message>
+        <source>Replace with</source>
+        <translation>既存レベルと置き換え</translation>
+    </message>
+    <message>
+        <source>Paste Special</source>
+        <translation>特殊な貼り付け</translation>
+    </message>
+    <message>
+        <source>Edit Image</source>
+        <translation>画像の編集</translation>
     </message>
 </context>
 <context>
@@ -10987,6 +11424,22 @@ Please refer to the user guide for details.</source>
     <message>
         <source>Subsampling</source>
         <translation>離散サンプリング</translation>
+    </message>
+    <message>
+        <source>Click to select column</source>
+        <translation>[クリック] 列を選択</translation>
+    </message>
+    <message>
+        <source>Click to select column, drag to move it, double-click to edit</source>
+        <translation>［クリック］列を選択 ［ドラッグ］列を移動 [ダブルクリック]列の名前を変更</translation>
+    </message>
+    <message>
+        <source>Click to select column, double-click to edit</source>
+        <translation>［クリック］列を選択 [ダブルクリック]列の名前を変更</translation>
+    </message>
+    <message>
+        <source>Additional column settings</source>
+        <translation>列の表示オプション</translation>
     </message>
 </context>
 <context>
@@ -11137,6 +11590,13 @@ Please refer to the user guide for details.</source>
     </message>
 </context>
 <context>
+    <name>XsheetGUI::XSheetToolbar</name>
+    <message>
+        <source>Customize XSheet Toolbar</source>
+        <translation>タイムシートツールバーをカスタマイズ</translation>
+    </message>
+</context>
+<context>
     <name>XsheetViewer</name>
     <message>
         <source>Untitled</source>
@@ -11177,6 +11637,10 @@ Please refer to the user guide for details.</source>
     <message>
         <source> columns</source>
         <translation> 列</translation>
+    </message>
+    <message>
+        <source>Zoom in/out of timeline</source>
+        <translation>タイムラインの拡大/縮小</translation>
     </message>
 </context>
 </TS>
