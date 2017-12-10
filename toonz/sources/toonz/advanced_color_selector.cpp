@@ -25,6 +25,7 @@ public:
   AdvancedColorSelectorFactory() : TPanelFactory("AdvancedColorSelector") {}
   void initialize(TPanel *panel) override {
     auto wheel = new AdvancedColorSelector(panel);
+    wheel->setEnabledWidgets(AdvancedColorSelector::RGBSliders);
     auto palette_controller = TApp::instance()->getPaletteController();
     auto palette_handle = palette_controller->getCurrentPalette();
     QObject::connect(
