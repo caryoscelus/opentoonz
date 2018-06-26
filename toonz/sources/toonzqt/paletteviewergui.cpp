@@ -430,8 +430,20 @@ QSize PageViewer::getChipSize() const {
 */
 void PageViewer::drawColorChip(QPainter &p, QRect &chipRect,
                                TColorStyle *style) {
-  TRaster32P icon = style->getIcon(qsize2Dimension(chipRect.size()));
-  p.drawPixmap(chipRect.left(), chipRect.top(), rasterToQPixmap(icon, false));
+  // draw with MainColor for TSolidColorStyle(3), TColorCleanupStyle(2001)
+  // and TBlackCleanupStyle(2002)
+  if (style->getTagId() == 3 || style->getTagId() == 2001 ||
+      style->getTagId() == 2002) {
+    QColor styleColor((int)style->getMainColor().r,
+                      (int)style->getMainColor().g,
+                      (int)style->getMainColor().b);
+    if (LutManager::instance()->isValid())
+      LutManager::instance()->convert(styleColor);
+    p.fillRect(chipRect, QBrush(styleColor));
+  } else {
+    TRaster32P icon = style->getIcon(qsize2Dimension(chipRect.size()));
+    p.drawPixmap(chipRect.left(), chipRect.top(), rasterToQPixmap(icon, false));
+  }
   p.drawRect(chipRect);
 }
 
@@ -453,7 +465,7 @@ void PageViewer::drawColorName(QPainter &p, QRect &nameRect, TColorStyle *style,
       name += "  " + toQString(g.first) + ":" + QString::number(g.second);
     if (style->getFlags() != 0) name += "(autopaint)";
 
-    TPoint pickedPos = style->getPickedPosition();
+    TPoint pickedPos = style->getPickedPosition().pos;
     if (pickedPos != TPoint())
       name += QString(" (%1,%2)").arg(pickedPos.x).arg(pickedPos.y);
 
@@ -682,8 +694,8 @@ void PageViewer::paintEvent(QPaintEvent *e) {
       // and TBlackCleanupStyle(2002)
       if (style->getTagId() == 3 || style->getTagId() == 2001 ||
           style->getTagId() == 2002) {
-        if (LutCalibrator::instance()->isValid())
-          LutCalibrator::instance()->convert(styleColor);
+        if (LutManager::instance()->isValid())
+          LutManager::instance()->convert(styleColor);
 
         p.fillRect(chipRect, QBrush(styleColor));
 
@@ -821,7 +833,8 @@ void PageViewer::paintEvent(QPaintEvent *e) {
       }
 
       // draw "Picked Position" indicator (not show on small chip mode)
-      if (style->getPickedPosition() != TPoint() && m_viewMode != SmallChips) {
+      if (style->getPickedPosition().pos != TPoint() &&
+          m_viewMode != SmallChips) {
         QRect ppRect(chipRect.bottomLeft() + QPoint(offset, -14),
                      QSize(12, 15));
         p.drawRect(ppRect);

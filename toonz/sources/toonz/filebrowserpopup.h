@@ -332,9 +332,10 @@ public:
   ReplaceLevelPopup();
 
   bool execute() override;
-  void show();
 
   void initFolder() override;
+  void setRange(TCellSelection::Range &range, std::set<int> &columnRange,
+                bool &replaceCells);
 
 protected slots:
   void onSelectionChanged(TSelection *selection);
@@ -392,6 +393,8 @@ protected:
 */
 
 class ReplaceParentDirectoryPopup final : public FileBrowserPopup {
+  Q_OBJECT
+
   TCellSelection::Range m_range;
   bool m_replaceCells;  // true : cell selection, false : column selection
   std::set<int> m_columnRange;
@@ -439,7 +442,7 @@ public:
   void openPopup(QStringList filters, bool isDirectoryOnly,
                  QString lastSelectedPath,
                  const QWidget *parentWidget = NULL) override;
-  QString getPath() override;
+  QString getPath(bool codePath = true) override;
 };
 
 #endif  // FILEBROWSERPOPUP_H

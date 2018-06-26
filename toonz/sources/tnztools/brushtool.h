@@ -39,8 +39,8 @@ struct BrushData final : public TPersist {
 
   std::wstring m_name;
   double m_min, m_max, m_acc, m_smooth, m_hardness, m_opacityMin, m_opacityMax;
-  bool m_selective, m_pencil, m_breakAngles, m_pressure;
-  int m_cap, m_join, m_miter;
+  bool m_pencil, m_breakAngles, m_pressure;
+  int m_cap, m_join, m_miter, m_drawOrder;
   double m_modifierSize, m_modifierOpacity;
   bool m_modifierEraser, m_modifierLockAlpha;
 
@@ -162,8 +162,8 @@ public:
   bool doFrameRangeStrokes(TFrameId firstFrameId, TStroke *firstStroke,
                            TFrameId lastFrameId, TStroke *lastStroke,
                            bool drawFirstStroke = true);
-  void checkGuideSnapping(bool beforeMousePress);
-  void checkStrokeSnapping(bool beforeMousePress);
+  void checkGuideSnapping(bool beforeMousePress, bool invertCheck);
+  void checkStrokeSnapping(bool beforeMousePress, bool invertCheck);
 
 protected:
   TPropertyGroup m_prop[2];
@@ -174,7 +174,7 @@ protected:
   TDoubleProperty m_smooth;
   TDoubleProperty m_hardness;
   TEnumProperty m_preset;
-  TBoolProperty m_selective;
+  TEnumProperty m_drawOrder;
   TBoolProperty m_breakAngles;
   TBoolProperty m_pencil;
   TBoolProperty m_pressure;
@@ -200,7 +200,8 @@ protected:
   int m_strokeIndex1, m_strokeIndex2, m_col, m_firstFrame, m_veryFirstFrame,
       m_veryFirstCol, m_targetType;
   double m_w1, m_w2, m_pixelSize, m_currThickness, m_minDistance2;
-  bool m_foundFirstSnap = false, m_foundLastSnap = false, m_dragDraw = true;
+  bool m_foundFirstSnap = false, m_foundLastSnap = false, m_dragDraw = true,
+       m_altPressed = false, m_snapSelf = false;
   TRectD m_modifiedRegion;
   TPointD m_dpiScale,
       m_mousePos,  //!< Current mouse position, in world coordinates.

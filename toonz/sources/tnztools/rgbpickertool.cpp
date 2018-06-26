@@ -219,6 +219,11 @@ void RGBPickerTool::setToolOptionsBox(RGBPickerToolOptionsBox *toolOptionsBox) {
 
 void RGBPickerTool::updateTranslation() {
   m_pickType.setQStringName(tr("Type:"));
+  m_pickType.setItemUIName(NORMAL_PICK, tr("Normal"));
+  m_pickType.setItemUIName(RECT_PICK, tr("Rectangular"));
+  m_pickType.setItemUIName(FREEHAND_PICK, tr("Freehand"));
+  m_pickType.setItemUIName(POLYLINE_PICK, tr("Polyline"));
+
   m_passivePick.setQStringName(tr("Passive Pick"));
 }
 
@@ -418,11 +423,11 @@ void RGBPickerTool::passivePick() {
 
   StylePicker picker(image);
 
-  if (LutCalibrator::instance()->isValid()) m_viewer->bindFBO();
+  if (LutManager::instance()->isValid()) m_viewer->bindFBO();
 
   TPixel32 pix = picker.pickColor(area);
 
-  if (LutCalibrator::instance()->isValid()) m_viewer->releaseFBO();
+  if (LutManager::instance()->isValid()) m_viewer->releaseFBO();
 
   QColor col((int)pix.r, (int)pix.g, (int)pix.b);
 
@@ -446,11 +451,11 @@ void RGBPickerTool::pick() {
                        m_mousePixelPosition.x + 1, m_mousePixelPosition.y + 1);
   StylePicker picker(image, palette);
 
-  if (LutCalibrator::instance()->isValid()) m_viewer->bindFBO();
+  if (LutManager::instance()->isValid()) m_viewer->bindFBO();
 
   m_currentValue = picker.pickColor(area);
 
-  if (LutCalibrator::instance()->isValid()) m_viewer->releaseFBO();
+  if (LutManager::instance()->isValid()) m_viewer->releaseFBO();
 
   TXshSimpleLevel *level = app->getCurrentLevel()->getSimpleLevel();
   UndoPickRGBM *cmd = new UndoPickRGBM(palette, styleId, m_currentValue, level);
@@ -491,11 +496,11 @@ void RGBPickerTool::pickRect() {
   if (area.getLx() <= 1 || area.getLy() <= 1) return;
   StylePicker picker(image, palette);
 
-  if (LutCalibrator::instance()->isValid()) m_viewer->bindFBO();
+  if (LutManager::instance()->isValid()) m_viewer->bindFBO();
 
   m_currentValue = picker.pickColor(area);
 
-  if (LutCalibrator::instance()->isValid()) m_viewer->releaseFBO();
+  if (LutManager::instance()->isValid()) m_viewer->releaseFBO();
 }
 
 //---------------------------------------------------------
@@ -512,11 +517,11 @@ void RGBPickerTool::pickStroke() {
   StylePicker picker(image, palette);
   TStroke *stroke = new TStroke(*m_stroke);
 
-  if (LutCalibrator::instance()->isValid()) m_viewer->bindFBO();
+  if (LutManager::instance()->isValid()) m_viewer->bindFBO();
 
   m_currentValue = picker.pickColor(stroke);
 
-  if (LutCalibrator::instance()->isValid()) m_viewer->releaseFBO();
+  if (LutManager::instance()->isValid()) m_viewer->releaseFBO();
 
   if (!(m_pickType.getValue() == POLYLINE_PICK)) {
     TXshSimpleLevel *level = app->getCurrentLevel()->getSimpleLevel();

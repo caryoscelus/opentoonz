@@ -28,6 +28,7 @@
 #include "toonz/sceneproperties.h"
 #include "toonz/palettecontroller.h"
 #include "toonz/tpalettehandle.h"
+#include "toonz/preferences.h"
 
 // TnzCore includes
 #include "tgl.h"
@@ -228,6 +229,9 @@ ImageViewer::ImageViewer(QWidget *parent, FlipBook *flipbook,
 
   if (m_isHistogramEnable)
     m_histogramPopup = new HistogramPopup(tr("Flipbook Histogram"));
+
+  if (Preferences::instance()->isColorCalibrationEnabled())
+    m_lutCalibrator = new LutCalibrator();
 }
 
 //-----------------------------------------------------------------------------
@@ -413,7 +417,11 @@ void ImageViewer::initializeGL() {
   initializeOpenGLFunctions();
 
   // to be computed once through the software
-  LutCalibrator::instance()->initialize();
+  if (m_lutCalibrator) {
+    m_lutCalibrator->initialize();
+    connect(context(), SIGNAL(aboutToBeDestroyed()), this,
+            SLOT(onContextAboutToBeDestroyed()));
+  }
 
   // glClearColor(1.0,1.0,1.0,1);
   glClear(GL_COLOR_BUFFER_BIT);
@@ -437,7 +445,7 @@ void ImageViewer::resizeGL(int w, int h) {
   glTranslated(w * 0.5, h * 0.5, 0);
 
   // remake fbo with new size
-  if (LutCalibrator::instance()->isValid()) {
+  if (m_lutCalibrator && m_lutCalibrator->isValid()) {
     if (m_fbo) delete m_fbo;
     m_fbo = new QOpenGLFramebufferObject(w, h);
   }
@@ -446,7 +454,7 @@ void ImageViewer::resizeGL(int w, int h) {
 //-----------------------------------------------------------------------------
 
 void ImageViewer::paintGL() {
-  if (LutCalibrator::instance()->isValid()) m_fbo->bind();
+  if (m_lutCalibrator && m_lutCalibrator->isValid()) m_fbo->bind();
 
   TDimension viewerSize(width(), height());
   TAffine aff = m_viewAff;
@@ -503,8 +511,8 @@ void ImageViewer::paintGL() {
   }
 
   if (!m_image) {
-    if (LutCalibrator::instance()->isValid())
-      LutCalibrator::instance()->onEndDraw(m_fbo);
+    if (m_lutCalibrator && m_lutCalibrator->isValid())
+      m_lutCalibrator->onEndDraw(m_fbo);
     return;
   }
 
@@ -582,8 +590,8 @@ void ImageViewer::paintGL() {
     }
   }
 
-  if (LutCalibrator::instance()->isValid())
-    LutCalibrator::instance()->onEndDraw(m_fbo);
+  if (m_lutCalibrator && m_lutCalibrator->isValid())
+    m_lutCalibrator->onEndDraw(m_fbo);
 }
 
 //------------------------------------------------------------------------------
@@ -627,9 +635,10 @@ void ImageViewer::panQt(const QPoint &delta) {
 void ImageViewer::zoomQt(const QPoint &center, double factor) {
   if (factor == 1.0) return;
   TPointD delta(center.x(), center.y());
-
-  setViewAff(TTranslation(delta) * TScale(factor) * TTranslation(-delta) *
-             m_viewAff);
+  double scale2 = fabs(m_viewAff.det());
+  if ((scale2 < 100000 || factor < 1) && (scale2 > 0.001 * 0.05 || factor > 1))
+    setViewAff(TTranslation(delta) * TScale(factor) * TTranslation(-delta) *
+               m_viewAff);
   update();
 }
 
@@ -841,11 +850,11 @@ void ImageViewer::pickColor(QMouseEvent *event, bool putValueToStyleEditor) {
   TPoint mousePos = TPoint(curPos.x(), height() - 1 - curPos.y());
   TRectD area     = TRectD(mousePos.x, mousePos.y, mousePos.x, mousePos.y);
 
-  if (LutCalibrator::instance()->isValid()) m_fbo->bind();
+  if (m_lutCalibrator && m_lutCalibrator->isValid()) m_fbo->bind();
 
   const TPixel32 pix = picker.pickColor(area);
 
-  if (LutCalibrator::instance()->isValid()) m_fbo->release();
+  if (m_lutCalibrator && m_lutCalibrator->isValid()) m_fbo->release();
 
   QPoint viewP = mapFrom(this, curPos);
   TPointD pos  = getViewAff().inv() *
@@ -883,11 +892,11 @@ void ImageViewer::rectPickColor(bool putValueToStyleEditor) {
     return;
   }
 
-  if (LutCalibrator::instance()->isValid() && m_fbo) m_fbo->bind();
+  if (m_lutCalibrator && m_lutCalibrator->isValid() && m_fbo) m_fbo->bind();
 
   const TPixel32 pix = picker.pickColor(area.enlarge(-1, -1));
 
-  if (LutCalibrator::instance()->isValid() && m_fbo) m_fbo->release();
+  if (m_lutCalibrator && m_lutCalibrator->isValid() && m_fbo) m_fbo->release();
 
   // throw the picked color to the histogram
   m_histogramPopup->updateAverageColor(pix);
@@ -1148,6 +1157,15 @@ void ImageViewer::keyPressEvent(QKeyEvent *event) {
   if (FlipZoomer(this).exec(event)) return;
 
   ImageViewerShortcutReceiver(m_flipbook).exec(event);
+}
+
+//-----------------------------------------------------------------------------
+
+void ImageViewer::onContextAboutToBeDestroyed() {
+  if (!m_lutCalibrator) return;
+  makeCurrent();
+  m_lutCalibrator->cleanup();
+  doneCurrent();
 }
 
 //-----------------------------------------------------------------------------

@@ -1336,14 +1336,19 @@ void MainWindow::onUpdateCheckerDone(bool error) {
   int const latest_version =
       get_version_code_from(m_updateChecker->getLatestVersion().toStdString());
   if (software_version < latest_version) {
-    std::vector<QString> buttons;
+    QStringList buttons;
     buttons.push_back(QObject::tr("Visit Web Site"));
     buttons.push_back(QObject::tr("Cancel"));
-    int ret = DVGui::MsgBox(
+    DVGui::MessageAndCheckboxDialog *dialog = DVGui::createMsgandCheckbox(
         DVGui::INFORMATION,
         QObject::tr("An update is available for this software.\nVisit the Web "
                     "site for more information."),
-        buttons);
+        QObject::tr("Check for the latest version on launch."), buttons, 0,
+        Qt::Checked);
+    int ret = dialog->exec();
+    if (dialog->getChecked() == Qt::Unchecked)
+      Preferences::instance()->enableLatestVersionCheck(false);
+    dialog->deleteLater();
     if (ret == 1) {
       // Write the new last date to file
       QDesktopServices::openUrl(QObject::tr("https://opentoonz.github.io/e/"));
@@ -1413,12 +1418,19 @@ QAction *MainWindow::createAction(const char *id, const QString &name,
   QAction *action = new DVAction(name, this);
   addAction(action);
 #ifdef MACOSX
-  if (strcmp(id, MI_Preferences) == 0) {
+  // To prevent the wrong menu items (due to MacOS menu naming conventions),
+  // from
+  // taking Preferences, Quit, or About roles (sometimes happens unexpectedly in
+  // translations) - all menu items should have "NoRole"
+  //  except for Preferences, Quit, and About
+  if (strcmp(id, MI_Preferences) == 0)
     action->setMenuRole(QAction::PreferencesRole);
-  }
-  if (strcmp(id, MI_ShortcutPopup) == 0) {
+  else if (strcmp(id, MI_Quit) == 0)
+    action->setMenuRole(QAction::QuitRole);
+  else if (strcmp(id, MI_About) == 0)
+    action->setMenuRole(QAction::AboutRole);
+  else
     action->setMenuRole(QAction::NoRole);
-  }
 #endif
   CommandManager::instance()->define(id, type, defaultShortcut.toStdString(),
                                      action);
@@ -1620,7 +1632,8 @@ void MainWindow::defineActions() {
   QAction *newToonzRasterLevelAction = createMenuFileAction(
       MI_NewToonzRasterLevel, tr("&New Toonz Raster Level"), "");
   newToonzRasterLevelAction->setIconText(tr("New Toonz Raster Level"));
-  newToonzRasterLevelAction->setIcon(QIcon(":Resources/new_toonz_raster_level.svg"));
+  newToonzRasterLevelAction->setIcon(
+      QIcon(":Resources/new_toonz_raster_level.svg"));
   QAction *newRasterLevelAction =
       createMenuFileAction(MI_NewRasterLevel, tr("&New Raster Level"), "");
   newRasterLevelAction->setIconText(tr("New Raster Level"));
@@ -1687,7 +1700,9 @@ void MainWindow::defineActions() {
   redoAction->setIcon(QIcon(":Resources/redo.svg"));
   createMenuEditAction(MI_Cut, tr("&Cut"), "Ctrl+X");
   createMenuEditAction(MI_Copy, tr("&Copy"), "Ctrl+C");
-  createMenuEditAction(MI_Paste, tr("&Insert Paste"), "Ctrl+V");
+  createMenuEditAction(MI_Paste, tr("&Paste Insert"), "Ctrl+V");
+  createMenuEditAction(MI_PasteAbove, tr("&Paste Insert Above/After"),
+                       "Ctrl+Shift+V");
   // createMenuEditAction(MI_PasteNew,     tr("&Paste New"),  "");
   createMenuCellsAction(MI_MergeFrames, tr("&Merge"), "");
   createMenuEditAction(MI_PasteInto, tr("&Paste Into"), "");
@@ -1702,6 +1717,7 @@ void MainWindow::defineActions() {
                              tr("Remove Reference to Studio Palette"), "");
   createMenuEditAction(MI_Clear, tr("&Delete"), "Del");
   createMenuEditAction(MI_Insert, tr("&Insert"), "Ins");
+  createMenuEditAction(MI_InsertAbove, tr("&Insert Above/After"), "Shift+Ins");
   createMenuEditAction(MI_Group, tr("&Group"), "Ctrl+G");
   createMenuEditAction(MI_Ungroup, tr("&Ungroup"), "Ctrl+Shift+G");
   createMenuEditAction(MI_BringToFront, tr("&Bring to Front"), "Ctrl+]");
@@ -1887,6 +1903,7 @@ void MainWindow::defineActions() {
                         tr("Reframe with Empty Inbetweens..."), "");
   createMenuCellsAction(MI_AutoInputCellNumber, tr("Auto Input Cell Number..."),
                         "");
+  createMenuCellsAction(MI_FillEmptyCell, tr("&Fill In Empty Cells"), "");
 
   createRightClickMenuAction(MI_SetKeyframes, tr("&Set Key"), "Z");
   createRightClickMenuAction(MI_PasteNumbers, tr("&Paste Numbers"), "");
@@ -2019,6 +2036,7 @@ void MainWindow::defineActions() {
   createMenuWindowsAction(MI_OpenLineTestView, tr("&LineTest Viewer"), "");
 #endif
   createMenuWindowsAction(MI_OpenXshView, tr("&Xsheet"), "");
+  createMenuWindowsAction(MI_OpenTimelineView, tr("&Timeline"), "");
   //  createAction(MI_TestAnimation,     "Test Animation",   "Ctrl+Return");
   //  createAction(MI_Export,            "Export",           "Ctrl+E");
 
@@ -2040,6 +2058,8 @@ void MainWindow::defineActions() {
   createToggle(MI_OnionSkin, tr("Onion Skin Toggle"), "/", false,
                RightClickMenuCommandType);
   createToggle(MI_ZeroThick, tr("Zero Thick Lines"), "Shift+/", false,
+               RightClickMenuCommandType);
+  createToggle(MI_CursorOutline, tr("Toggle Cursor Size Outline"), "", false,
                RightClickMenuCommandType);
 
   createRightClickMenuAction(MI_ToggleCurrentTimeIndicator,
@@ -2209,6 +2229,8 @@ void MainWindow::defineActions() {
                           tr("Pressure Sensitivity"), "Shift+P");
   createToolOptionsAction("A_ToolOption_SegmentInk", tr("Segment Ink"), "F8");
   createToolOptionsAction("A_ToolOption_Selective", tr("Selective"), "F7");
+  createToolOptionsAction("A_ToolOption_DrawOrder",
+                          tr("Brush Tool - Draw Order"), "");
   createToolOptionsAction("A_ToolOption_Smooth", tr("Smooth"), "");
   createToolOptionsAction("A_ToolOption_Snap", tr("Snap"), "");
   createToolOptionsAction("A_ToolOption_AutoSelectDrawing",
@@ -2253,6 +2275,8 @@ void MainWindow::defineActions() {
                           tr("Active Axis - Shear"), "");
   createToolOptionsAction("A_ToolOption_EditToolActiveAxis:Center",
                           tr("Active Axis - Center"), "");
+  createToolOptionsAction("A_ToolOption_EditToolActiveAxis:All",
+                          tr("Active Axis - All"), "");
 
   createToolOptionsAction("A_ToolOption_SkeletonMode:Build Skeleton",
                           tr("Build Skeleton Mode"), "");

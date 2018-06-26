@@ -23,6 +23,7 @@
 #include "previewer.h"
 
 #include <QMatrix4x4>
+#include <QTouchDevice>
 
 //=====================================================================
 
@@ -35,6 +36,7 @@ class LocatorPopup;
 class QGestureEvent;
 class QTouchEvent;
 class QOpenGLFramebufferObject;
+class LutCalibrator;
 
 namespace ImageUtils {
 class FullScreenWidget;
@@ -79,12 +81,13 @@ class SceneViewer final : public GLWidgetForHighDpi,
   } m_tabletState = None;
   // used to handle wrong mouse drag events!
   bool m_buttonClicked, m_toolSwitched;
-  bool m_shownOnce     = false;
-  bool m_gestureActive = false;
-  bool m_touchActive   = false;
-  bool m_rotating      = false;
-  bool m_zooming       = false;
-  bool m_panning       = false;
+  bool m_shownOnce                       = false;
+  bool m_gestureActive                   = false;
+  bool m_touchActive                     = false;
+  QTouchDevice::DeviceType m_touchDevice = QTouchDevice::TouchScreen;
+  bool m_rotating                        = false;
+  bool m_zooming                         = false;
+  bool m_panning                         = false;
   QPointF m_firstPanPoint;
   QPointF m_undoPoint;
   double m_scaleFactor;    // used for zoom gesture
@@ -148,6 +151,7 @@ class SceneViewer final : public GLWidgetForHighDpi,
 
   // used for color calibration with 3DLUT
   QOpenGLFramebufferObject *m_fbo = NULL;
+  LutCalibrator *m_lutCalibrator  = NULL;
 
   enum Device3D {
     NONE,
@@ -412,6 +416,7 @@ public slots:
 
   void releaseBusyOnTabletMove() { m_isBusyOnTabletMove = false; }
 
+  void onContextAboutToBeDestroyed();
 signals:
 
   void onZoomChanged();
