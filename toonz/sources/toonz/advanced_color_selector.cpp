@@ -7,9 +7,6 @@
 #include "tpalette.h"
 #include <toonz/tpalettehandle.h>
 
-#include <QDebug>
-// #include "advanced_color_selector.h"
-
 using color_widgets::AdvancedColorSelector;
 
 TPixelRGBM32 qColorToTPixel(QColor c) {
@@ -39,20 +36,6 @@ public:
         if (palette->getStyle(styleIndex)->getMainColor() == qColorToTPixel(c))
             return;
         palette->getStyle(styleIndex)->setMainColor(qColorToTPixel(c));
-//             if (palette->getPaletteName() != L"EmptyColorFieldPalette")
-//               TUndoManager::manager()->add(new UndoPaletteChange(
-//                   m_paletteHandle, styleIndex, *m_oldStyle, *m_editedStyle));
-//           }
-// 
-//           setOldStyleToStyle(m_editedStyle.getPointer());
-// 
-//           // In case the frame is a keyframe, update it
-//           if (palette->isKeyframe(styleIndex, palette->getFrame()))  // here
-//             palette->setKeyframe(styleIndex, palette->getFrame());   //
-// 
-//           palette->setDirtyFlag(true);
-//         }
-
         palette_handle->notifyColorStyleChanged(true);
       }
     );
