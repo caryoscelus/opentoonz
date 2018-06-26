@@ -79,7 +79,15 @@ public:
       &TPaletteHandle::paletteSwitched,
       update_wheel
     );
-    panel->setWidget(wheel);
+    
+    auto layout = new QVBoxLayout();
+    layout->setSpacing(0);
+    layout->setMargin(0);
+    layout->addWidget(wheel);
+    auto widget = new QWidget();
+    widget->setLayout(layout);
+    panel->setWidget(widget);
+
     panel->setIsMaximizable(false);
   }
 } advancedColorSelectorFactory;
