@@ -231,6 +231,7 @@ Preferences::Preferences()
 #else
     , m_interfaceFont("Helvetica")
 #endif
+    , m_interfaceFontStyle("Regular")
     , m_interfaceFontWeight(0)
     , m_defLevelWidth(0.0)
     , m_defLevelHeight(0.0)
@@ -342,7 +343,8 @@ Preferences::Preferences()
     , m_cursorBrushType("Small")
     , m_cursorBrushStyle("Default")
     , m_cursorOutlineEnabled(true)
-    , m_currentColumnColor(TPixel::Black) {
+    , m_currentColumnColor(TPixel::Black)
+    , m_enableWinInk(false) {
   TCamera camera;
   m_defLevelType   = PLI_XSHLEVEL;
   m_defLevelWidth  = camera.getSize().lx;
@@ -635,6 +637,10 @@ Preferences::Preferences()
   QString interfaceFont = m_settings->value("interfaceFont").toString();
   if (interfaceFont != "") m_interfaceFont = interfaceFont;
   setInterfaceFont(m_interfaceFont.toStdString());
+  QString interfaceFontStyle =
+      m_settings->value("interfaceFontStyle").toString();
+  if (interfaceFontStyle != "") m_interfaceFontStyle = interfaceFontStyle;
+  setInterfaceFontStyle(m_interfaceFontStyle.toStdString());
   getValue(*m_settings, "interfaceFontWeight", m_interfaceFontWeight);
   getValue(*m_settings, "useNumpadForSwitchingStyles",
            m_useNumpadForSwitchingStyles);
@@ -710,6 +716,8 @@ Preferences::Preferences()
   getValue(*m_settings, "currentColumnColor.g", g);
   getValue(*m_settings, "currentColumnColor.b", b);
   m_currentColumnColor = TPixel32(r, g, b);
+
+  getValue(*m_settings, "winInkEnabled", m_enableWinInk);
 }
 
 //-----------------------------------------------------------------
@@ -1319,6 +1327,13 @@ void Preferences::setInterfaceFont(std::string font) {
 
 //-----------------------------------------------------------------
 
+void Preferences::setInterfaceFontStyle(std::string style) {
+  m_interfaceFontStyle = QString::fromStdString(style);
+  m_settings->setValue("interfaceFontStyle", m_interfaceFontStyle);
+}
+
+//-----------------------------------------------------------------
+
 void Preferences::setInterfaceFontWeight(int weight) {
   m_interfaceFontWeight = weight;
   m_settings->setValue("interfaceFontWeight", m_interfaceFontWeight);
@@ -1724,4 +1739,9 @@ void Preferences::setCurrentColumnData(const TPixel &currentColumnColor) {
                        QString::number(currentColumnColor.g));
   m_settings->setValue("currentColumnColor.b",
                        QString::number(currentColumnColor.b));
+}
+
+void Preferences::enableWinInk(bool on) {
+  m_enableWinInk = on;
+  m_settings->setValue("winInkEnabled", on ? "1" : "0");
 }

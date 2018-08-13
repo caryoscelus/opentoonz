@@ -36,6 +36,7 @@
 #include "toonz/preferences.h"
 #include "toonz/tstageobjecttree.h"
 #include "toonz/mypaintbrushstyle.h"
+#include "toonz/tonionskinmaskhandle.h"
 
 // TnzCore includes
 #include "tproperty.h"
@@ -362,6 +363,17 @@ void ToolOptionControlBuilder::visit(TEnumProperty *p) {
     obj->setToolTip(p->getQStringName());
     control = obj;
     widget  = obj;
+    break;
+  }
+
+  case FONTCOMBOBOX: {
+    if (p->getQStringName() != "") {
+      QLabel *label = addLabel(p);
+      m_panel->addLabel(p->getName(), label);
+    }
+    ToolOptionFontCombo *obj = new ToolOptionFontCombo(m_tool, p, m_toolHandle);
+    control                  = obj;
+    widget                   = obj;
     break;
   }
 
@@ -1526,22 +1538,28 @@ TypeToolOptionsBox::TypeToolOptionsBox(QWidget *parent, TTool *tool,
   assert(props->getPropertyCount() > 0);
 
   ToolOptionControlBuilder builder(this, tool, pltHandle, toolHandle);
+  builder.setEnumWidgetType(ToolOptionControlBuilder::FONTCOMBOBOX);
   if (tool && tool->getProperties(0)) tool->getProperties(0)->accept(builder);
+  builder.setEnumWidgetType(ToolOptionControlBuilder::COMBOBOX);
+  if (tool && tool->getProperties(1)) tool->getProperties(1)->accept(builder);
 
   m_layout->addStretch(0);
 
   bool ret = true;
-  ToolOptionCombo *fontField =
-      dynamic_cast<ToolOptionCombo *>(m_controls.value("Font:"));
+
+  ToolOptionFontCombo *fontField =
+      dynamic_cast<ToolOptionFontCombo *>(m_controls.value("Font:"));
   ret &&connect(fontField, SIGNAL(currentIndexChanged(int)), this,
                 SLOT(onFieldChanged()));
 
-#ifndef MACOSX
+  //#ifndef MACOSX
   ToolOptionCombo *styleField =
       dynamic_cast<ToolOptionCombo *>(m_controls.value("Style:"));
   ret &&connect(styleField, SIGNAL(currentIndexChanged(int)), this,
                 SLOT(onFieldChanged()));
-#endif
+  ret &&connect(toolHandle, SIGNAL(toolComboBoxListChanged(std::string)),
+                styleField, SLOT(reloadComboBoxList(std::string)));
+  //#endif
 
   ToolOptionCombo *sizeField =
       dynamic_cast<ToolOptionCombo *>(m_controls.value("Size:"));
@@ -2480,6 +2498,45 @@ void StylePickerToolOptionsBox::updateRealTimePickLabel(const int ink,
 }
 
 //=============================================================================
+// ShiftTraceToolOptionBox
+//-----------------------------------------------------------------------------
+
+ShiftTraceToolOptionBox::ShiftTraceToolOptionBox(QWidget *parent)
+    : ToolOptionsBox(parent) {
+  setFrameStyle(QFrame::StyledPanel);
+  setFixedHeight(26);
+
+  m_resetPrevGhostBtn =
+      new QPushButton(tr("Reset Shift of Previous Drawing"), this);
+  m_resetAfterGhostBtn =
+      new QPushButton(tr("Reset Shift of Forward Drawing"), this);
+
+  m_layout->addWidget(m_resetPrevGhostBtn, 0);
+  m_layout->addWidget(m_resetAfterGhostBtn, 0);
+  m_layout->addStretch(1);
+
+  connect(m_resetPrevGhostBtn, SIGNAL(clicked()), this,
+          SLOT(onResetPrevGhostBtnPressed()));
+  connect(m_resetAfterGhostBtn, SIGNAL(clicked()), this,
+          SLOT(onResetAfterGhostBtnPressed()));
+}
+
+void ShiftTraceToolOptionBox::resetGhost(int index) {
+  TTool::Application *app = TTool::getApplication();
+  OnionSkinMask osm       = app->getCurrentOnionSkin()->getOnionSkinMask();
+  osm.setShiftTraceGhostCenter(index, TPointD());
+  osm.setShiftTraceGhostAff(index, TAffine());
+  app->getCurrentOnionSkin()->setOnionSkinMask(osm);
+  app->getCurrentOnionSkin()->notifyOnionSkinMaskChanged();
+  TTool *tool = app->getCurrentTool()->getTool();
+  if (tool) tool->reset();
+}
+
+void ShiftTraceToolOptionBox::onResetPrevGhostBtnPressed() { resetGhost(0); }
+
+void ShiftTraceToolOptionBox::onResetAfterGhostBtnPressed() { resetGhost(1); }
+
+//=============================================================================
 // ToolOptions
 //-----------------------------------------------------------------------------
 
@@ -2587,6 +2644,8 @@ void ToolOptions::onToolSwitched() {
       } else if (tool->getName() == T_StylePicker)
         panel = new StylePickerToolOptionsBox(0, tool, currPalette, currTool,
                                               app->getPaletteController());
+      else if (tool->getName() == "T_ShiftTrace")
+        panel = new ShiftTraceToolOptionBox(this);
       else
         panel = tool->createOptionsBox();  // Only this line should remain out
                                            // of that if/else monstrosity
