@@ -56,7 +56,6 @@
 #include "toonz/cleanupparameters.h"
 #include "toonz/toonzimageutils.h"
 #include "toonz/txshleveltypes.h"
-#include "toonz/preferences.h"
 #include "subcameramanager.h"
 
 // TnzCore includes
@@ -782,6 +781,8 @@ void SceneViewer::showEvent(QShowEvent *) {
     m_shownOnce = true;
   }
   TApp::instance()->setActiveViewer(this);
+
+  update();
 }
 
 //-----------------------------------------------------------------------------
@@ -1607,6 +1608,13 @@ void SceneViewer::drawScene() {
       drawSpline(getViewMatrix(), clipRect,
                  m_referenceMode == CAMERA3D_REFERENCE, m_pixelSize);
     assert(glGetError() == 0);
+
+    // gather animated guide strokes' bounding boxes
+    // it is used for updating viewer next time
+    std::vector<TStroke *> guidedStrokes = painter.getGuidedStrokes();
+    for (auto itr = guidedStrokes.begin(); itr != guidedStrokes.end(); ++itr) {
+      m_guidedDrawingBBox += (*itr)->getBBox();
+    }
   }
 }
 
@@ -1748,11 +1756,19 @@ void SceneViewer::GLInvalidateRect(const TRectD &rect) {
     return;
   else if (rect.isEmpty())
     m_clipRect = InvalidateAllRect;
-  else
+  else {
     m_clipRect += rect;
+    if (!m_guidedDrawingBBox.isEmpty()) {
+      TTool *tool         = TApp::instance()->getCurrentTool()->getTool();
+      TPointD topLeft     = tool->getMatrix() * m_guidedDrawingBBox.getP00();
+      TPointD bottomRight = tool->getMatrix() * m_guidedDrawingBBox.getP11();
+      m_clipRect += TRectD(topLeft, bottomRight);
+    }
+  }
   update();
   if (m_vRuler) m_vRuler->update();
   if (m_hRuler) m_hRuler->update();
+  m_guidedDrawingBBox.empty();
 }
 //-----------------------------------------------------------------------------
 
@@ -2376,7 +2392,7 @@ includeInvisible);
 //-----------------------------------------------------------------------------
 
 int SceneViewer::posToRow(const TPointD &p, double distance,
-                          bool includeInvisible) const {
+                          bool includeInvisible, bool currentColumnOnly) const {
   int oldRasterizePli = TXshSimpleLevel::m_rasterizePli;
   TApp *app           = TApp::instance();
   OnionSkinMask osm   = app->getCurrentOnionSkin()->getOnionSkinMask();
@@ -2404,6 +2420,8 @@ int SceneViewer::posToRow(const TPointD &p, double distance,
     args.m_col         = currentColumnIndex;
     args.m_osm         = &osm;
     args.m_onlyVisible = includeInvisible;
+
+    if (currentColumnOnly) picker.setCurrentColumnIndex(currentColumnIndex);
 
     Stage::visit(picker, args);
   }

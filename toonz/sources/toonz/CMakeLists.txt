@@ -107,7 +107,6 @@ set(MOC_HEADERS
     sceneviewerevents.h
     scriptconsolepanel.h
     selectionutils.h
-    shifttracetool.h
     shortcutpopup.h
     soundtrackexport.h
     startuppopup.h
@@ -159,6 +158,7 @@ set(MOC_HEADERS
 	reframepopup.h
 	autoinputcellnumberpopup.h
 	colormodelbehaviorpopup.h
+	boardsettingspopup.h
 # Tracker file
     dummyprocessor.h
     metnum.h
@@ -255,7 +255,6 @@ set(SOURCES
     sceneviewercontextmenu.cpp
     scenesettingspopup.cpp
     scriptconsolepanel.cpp
-    shifttracetool.cpp
     shortcutpopup.cpp
     soundtrackexport.cpp
     startuppopup.cpp
@@ -334,6 +333,7 @@ set(SOURCES
 	reframepopup.cpp
 	autoinputcellnumberpopup.cpp
 	colormodelbehaviorpopup.cpp
+	boardsettingspopup.cpp
 # Tracker file
     dummyprocessor.cpp
     metnum.cpp

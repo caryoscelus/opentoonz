@@ -26,7 +26,6 @@
 #include "toonz/txshchildlevel.h"
 #include "toonz/txshlevelcolumn.h"
 #include "toonz/txshleveltypes.h"
-#include "toonz/txshleveltypes.h"
 #include "toonz/tcolumnhandle.h"
 #include "toonz/hook.h"
 #include "toonz/preferences.h"
@@ -139,8 +138,14 @@ void ColumnPainter::paint(QPainter *painter,
   SchematicViewer *viewer = stageScene->getSchematicViewer();
   viewer->getNodeColor(levelType, nodeColor);
 
-  painter->setBrush(nodeColor);
-  painter->setPen(Qt::NoPen);
+  if (m_isReference && levelType != PLT_XSHLEVEL) {
+    painter->setBrush(viewer->getReferenceColumnColor());
+    painter->setPen(nodeColor);
+  } else {
+    painter->setBrush(nodeColor);
+    painter->setPen(Qt::NoPen);
+  }
+
   if (levelType == PLT_XSHLEVEL)
     painter->drawRoundRect(0, 0, m_width, m_height, 32, 99);
   else
@@ -1743,6 +1748,10 @@ StageSchematicColumnNode::StageSchematicColumnNode(StageSchematicScene *scene,
 
   m_columnPainter = new ColumnPainter(this, m_width, m_height, m_name);
   m_columnPainter->setZValue(1);
+
+  if (column && !column->isControl() && !column->isRendered() &&
+      !column->getMeshColumn())
+    m_columnPainter->setIsReference();
 
   int levelType;
   QString levelName;
